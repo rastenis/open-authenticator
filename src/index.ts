@@ -4,7 +4,7 @@ import config from "./config";
 import { db } from "./components/db";
 import * as express from "express";
 import * as bodyparser from "body-parser";
-import favicon from "serve-favicon";
+import * as favicon from "serve-favicon";
 
 import { router } from "./components/routes";
 
