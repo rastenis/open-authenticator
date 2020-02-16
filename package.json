@@ -15,11 +15,13 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
+    "@types/uuid": "^3.4.7",
     "chalk": "^3.0.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "path": "^0.12.7",
-    "serve-favicon": "^2.5.0"
+    "serve-favicon": "^2.5.0",
+    "uuid": "^3.4.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.2",
