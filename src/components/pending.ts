@@ -1,11 +1,17 @@
 import { IPending } from "../interfaces";
 import * as uuid from "uuid";
+import * as methods from "./methods";
 
 let pending: { [identifier: string]: IPending };
 
-enum pendingError {
+export enum pendingError {
   nonexistant,
-  expired
+  expired,
+  invalidMethod
+}
+
+export enum authenticationModuleError {
+  missingConfiguration
 }
 
 export async function addPending(identifier: string, type: string) {
@@ -22,7 +28,12 @@ export async function addPending(identifier: string, type: string) {
   };
 
   // sending verification request based on auth type
-  // TODO
+  if (!methods[type]) {
+    console.log("Authentication method not yet supported.");
+    throw pendingError.invalidMethod;
+  }
+
+  methods[type].notify(identifier, pending[identifier].token);
 }
 
 export async function confirmPending(identifier: string, token: string) {

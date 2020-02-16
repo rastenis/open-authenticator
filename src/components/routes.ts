@@ -30,3 +30,9 @@ router.get("/initiate", (req, res) => {
 
   res.sendStatus(200);
 });
+
+router.get("/authenticate/:token", (req, res) => {
+  console.log("Confirming authorization for ", req.params.token);
+
+  // TODO:
+});
