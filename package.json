@@ -4,7 +4,7 @@
   "description": "Open Authenticator platform.",
   "main": "dist/index.js",
   "repository": "git@github.com:Scharkee/open-authenticator.git",
-  "author": "***REMOVED*** Rastenis <matas2k@gmail.com>",
+  "author": "Matas Rastenis <matas2k@gmail.com>",
   "typings": "dist/index.d.ts",
   "license": "MIT",
   "scripts": {

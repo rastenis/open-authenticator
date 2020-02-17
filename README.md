@@ -18,9 +18,9 @@ npm setup
 // Pushover configuration
 {
   "type": "pushover",
-  "user": "***REMOVED***",
-  "token": "***REMOVED***",
-  "devices": ["***REMOVED***"]
+  "user": "PUSHOVER_USER",
+  "token": "PUSHOVER_TOKEN",
+  "devices": {"userIdentifier":"userDevice"}
 }
 ```
 
