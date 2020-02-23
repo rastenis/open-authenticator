@@ -1,4 +1,5 @@
 import { Router } from "express";
+import * as pending from "./pending";
 
 export let router = Router();
 
@@ -18,21 +19,22 @@ router.get("/initiate", (req, res) => {
   res.writeHead(200, headers);
 
   // send out verification notifications and wait for a response
-  // TODO:
+  pending.addPending(req.query.identifier, res);
 
-  const data = `data: test`;
-  res.write(data);
+  res.write(`data: test`);
 
   // Cleanup unfinished authorization on close
   req.on("close", () => {
     console.log(`Connection closed`);
   });
 
-  res.sendStatus(200);
+  //res.sendStatus(200);
 });
 
 router.get("/authenticate/:token", (req, res) => {
   console.log("Confirming authorization for ", req.params.token);
 
-  // TODO:
+  pending.confirmPending(req.query.identifier, req.query.token);
+
+  res.sendStatus(200);
 });

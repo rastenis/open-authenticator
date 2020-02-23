@@ -1,6 +1,8 @@
 import { IPending } from "../interfaces";
 import * as uuid from "uuid";
 import * as methods from "./methods";
+import config from "../config";
+import { Response } from "express";
 
 let pending: { [identifier: string]: IPending };
 
@@ -14,26 +16,30 @@ export enum authenticationModuleError {
   missingConfiguration
 }
 
-export async function addPending(identifier: string, type: string) {
+export async function addPending(identifier: string, res: Response) {
   if (pending[identifier]) {
     console.log("WARNING: Overwriting previous pending authentication.");
   }
+
+  // TODO: retries and support for multiple methods
+  let method = config.users[identifier][0];
 
   // adding pending
   pending[identifier] = {
     date: new Date(),
     token: getToken(),
-    type,
-    identifier
+    type: method.type,
+    identifier,
+    res
   };
 
   // sending verification request based on auth type
-  if (!methods[type]) {
+  if (!methods[method.type]) {
     console.log("Authentication method not yet supported.");
     throw pendingError.invalidMethod;
   }
 
-  methods[type].notify(identifier, pending[identifier].token);
+  methods[method.type].notify(identifier, method);
 }
 
 export async function confirmPending(identifier: string, token: string) {
@@ -44,7 +50,7 @@ export async function confirmPending(identifier: string, token: string) {
     throw pendingError.expired;
   }
   // confirming...
-  // TODO
+  pending[identifier].res.write("data: confirmed");
 }
 
 function getToken(): string {
