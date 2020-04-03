@@ -1,6 +1,6 @@
 import { IPending } from "../interfaces";
 import * as uuid from "uuid";
-import * as methods from "./methods";
+import * as methods from "./strategies";
 import config from "../config";
 import { Response } from "express";
 
@@ -16,30 +16,31 @@ export enum authenticationModuleError {
   missingConfiguration
 }
 
-export async function addPending(identifier: string, res: Response) {
+export async function addPending(
+  strategy: string,
+  identifier: string,
+  res: Response
+) {
   if (pending[identifier]) {
     console.log("WARNING: Overwriting previous pending authentication.");
   }
 
-  // TODO: retries and support for multiple methods
-  let method = config.users[identifier][0];
-
   // adding pending
   pending[identifier] = {
+    strategy,
     date: new Date(),
     token: getToken(),
-    type: method.type,
     identifier,
     res
   };
 
-  // sending verification request based on auth type
-  if (!methods[method.type]) {
-    console.log("Authentication method not yet supported.");
-    throw pendingError.invalidMethod;
-  }
+  //   // sending verification request based on auth type
+  //   if (!methods[method.type]) {
+  //     console.log("Authentication method not yet supported.");
+  //     throw pendingError.invalidMethod;
+  //   }
 
-  methods[method.type].notify(identifier, method);
+  //   methods[method.type].notify(identifier, method);
 }
 
 export async function confirmPending(identifier: string, token: string) {
@@ -53,7 +54,7 @@ export async function confirmPending(identifier: string, token: string) {
   pending[identifier].res.write("data: confirmed");
 }
 
-function getToken(): string {
+export function getToken(): string {
   const t = "";
   for (let index = 0; index < 5; index++) {
     splice(t, Math.random() * t.length, 0, uuid.v4());

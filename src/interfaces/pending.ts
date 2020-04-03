@@ -1,9 +1,9 @@
 import { Response } from "express";
 
 export interface IPending {
+  strategy: string;
   token: string;
   date: Date;
-  type: string;
   identifier: string;
   res: Response;
 }
