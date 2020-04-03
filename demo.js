@@ -8,29 +8,34 @@ const page = ` <!DOCTYPE html>
 
 <div id="demo">
   <h2>Let AJAX change this text</h2>
+
   <button type="button" onclick="loadDoc()">Change Content</button>
 </div>
 
 </body>
 
-<script>
+</html> `;
 
-function loadDoc() {
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-     document.getElementById("demo").innerHTML = this.responseText;
-    }
-  };
-  xhttp.open("GET", "ajax_info.txt", true);
-  xhttp.send();
-}
+const secretPage = ` <!DOCTYPE html>
+<html>
+<body>
+  <h2>This is secret content!</h2>
+  <p> You have logged in.</p>
+</body>
 
-</script>
 </html> `;
 
 app.get("/", (req, res) => {
   res.send(page);
 });
 
-app.listen(3000);
+app.post("/post", (req, res) => {
+  return res.redirect(
+    `http://localhost:${4000}/authorize?client_id=EXAMPLE&type=google&identity=none&redirect_uri=http://localhost:3001/callback`
+  );
+});
+
+app.post("/callback", (req, res) => {
+  return res.send(page);
+});
+app.listen(3001);
