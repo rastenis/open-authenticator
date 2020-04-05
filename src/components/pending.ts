@@ -6,7 +6,7 @@ import {
 import * as uuid from "uuid";
 import { Response } from "express";
 
-let pending: { [identifier: string]: IPending };
+let pending: { [identifier: string]: IPending } = {};
 
 export async function addPending(
   strategy: string,
@@ -45,6 +45,18 @@ export async function attach(token: string, res: Response) {
 
   // adding pending
   pending[token].res = res;
+}
+
+export async function cancel(token: string) {
+  if (!pending[token]) {
+    console.log(
+      "CRITICAL: Can not cancel non-existent pending authentication."
+    );
+    throw pendingError.nonexistant;
+  }
+
+  // deleting pending
+  delete pending[token];
 }
 
 export async function confirmPending(identifier: string, token: string) {

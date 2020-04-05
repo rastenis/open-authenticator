@@ -1,7 +1,8 @@
-Autenticating with #{strategy}.
+p Authenticating with #{strategy}.
 
 script.
-    let source = new EventSource("status");
-    source.onmessage = function(event) {
-        alert(event.data);
-    }; 
+    document.addEventListener("DOMContentLoaded", function(){
+        const es = new EventSource("status");
+        es.addEventListener("message", event => console.log("ASD"));
+    });
+

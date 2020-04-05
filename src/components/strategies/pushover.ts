@@ -16,9 +16,6 @@ export async function initiate(strategyData, userData: any, req, res) {
   // TODO: generating state
   let state = pending.getToken();
 
-  // registering pending
-  pending.addPending("pushover", state, res);
-
   // send out a notification that redirect the user to /authenticate/{token}
   push.send({
     user: strategyData.user,

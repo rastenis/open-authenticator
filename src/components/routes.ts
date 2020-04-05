@@ -2,6 +2,7 @@ import { Router } from "express";
 import * as pending from "./pending";
 import * as strategies from "./strategies";
 import config from "../config";
+import { setInterval } from "timers";
 
 export let router = Router();
 
@@ -32,10 +33,9 @@ router.get("/initiate", (req, res) => {
   if (strategies[req.query.strategy]) {
     strategies[req.query.strategy].initiate(
       config.strategies[req.query.strategy],
-      config.users[req.query.identity]?.data[req.query.identity],
+      config.users[req.query.identity]?.data[req.query.strategy],
       req,
-      res,
-      pending
+      res
     );
   } else {
     return res.status(500).send("Invalid strategy!");
@@ -51,28 +51,30 @@ router.get("/initiate", (req, res) => {
     req.session.token
   );
 
-  return res.render("default");
+  return res.render("default", { strategy: req.query.strategy });
 });
 
 router.get("/status", (req, res) => {
   // Keep connection open while authorizing
-  const headers = {
+  res.set({
     "Content-Type": "text/event-stream",
-    Connection: "keep-alive",
     "Cache-Control": "no-cache",
-  };
-  res.writeHead(200, headers);
+    Connection: "keep-alive",
+  });
 
   // Cleanup unfinished authorization on close
   req.on("close", () => {
     console.log(`Connection closed`);
+    pending.cancel(req.session.token);
   });
 
   // Adding res to the pending list
   pending.attach(req.session.token, res);
 
   // leaving the res open...
-  res.write("data: asdasdawdawd");
+  setInterval(() => {
+    res.write("data: test \n\n");
+  }, 2000);
 });
 
 router.get("/finalize/:token", (req, res) => {
