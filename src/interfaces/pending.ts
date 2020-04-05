@@ -4,6 +4,17 @@ export interface IPending {
   strategy: string;
   token: string;
   date: Date;
-  identifier: string;
-  res: Response;
+  identity: string;
+  res?: Response;
+}
+
+export enum pendingError {
+  nonexistant,
+  expired,
+  invalidMethod,
+  alreadyExists,
+}
+
+export enum authenticationModuleError {
+  missingConfiguration,
 }

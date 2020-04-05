@@ -1,37 +1,29 @@
-import { IPending } from "../interfaces";
+import {
+  IPending,
+  pendingError,
+  authenticationModuleError,
+} from "../interfaces";
 import * as uuid from "uuid";
-import * as methods from "./strategies";
-import config from "../config";
 import { Response } from "express";
 
 let pending: { [identifier: string]: IPending };
 
-export enum pendingError {
-  nonexistant,
-  expired,
-  invalidMethod
-}
-
-export enum authenticationModuleError {
-  missingConfiguration
-}
-
 export async function addPending(
   strategy: string,
-  identifier: string,
-  res: Response
+  identity: string,
+  token: string
 ) {
-  if (pending[identifier]) {
-    console.log("WARNING: Overwriting previous pending authentication.");
+  if (pending[token]) {
+    console.log("CRITICAL: Can not override existing pending authentication.");
+    throw pendingError.alreadyExists;
   }
 
   // adding pending
-  pending[identifier] = {
+  pending[token] = {
     strategy,
     date: new Date(),
     token: getToken(),
-    identifier,
-    res
+    identity,
   };
 
   //   // sending verification request based on auth type
@@ -41,6 +33,18 @@ export async function addPending(
   //   }
 
   //   methods[method.type].notify(identifier, method);
+}
+
+export async function attach(token: string, res: Response) {
+  if (!pending[token]) {
+    console.log(
+      "CRITICAL: Can not attach to non-existent pending authentication."
+    );
+    throw pendingError.nonexistant;
+  }
+
+  // adding pending
+  pending[token].res = res;
 }
 
 export async function confirmPending(identifier: string, token: string) {

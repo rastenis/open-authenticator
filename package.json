@@ -16,11 +16,16 @@
     "demo": "node demo.js"
   },
   "dependencies": {
+    "@types/express-session": "^1.17.0",
     "@types/uuid": "^3.4.7",
     "chalk": "^3.0.0",
     "cors": "^2.8.5",
+    "csurf": "^1.11.0",
     "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "helmet": "^3.22.0",
     "path": "^0.12.7",
+    "pug": "^2.0.4",
     "pushover-notifications": "^1.2.2",
     "serve-favicon": "^2.5.0",
     "uuid": "^3.4.0"

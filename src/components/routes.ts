@@ -13,11 +13,12 @@ router.get("/", (req, res) => {
 // strategy:string          - Name of strategy
 // insecure:bool            - true when accessing locally (via http)
 // identity:string          - (Optional) Identity that needs to be verified.
-// identity_strict:bool     - Default:true
+// strict:bool     - Default:true
 router.get("/initiate", (req, res) => {
   console.log(
-    `Initiating authorization for ${req.query.identity ??
-      "new user"} through ${req.query.strategy ?? "any strategy."}`
+    `Initiating authorization for ${req.query.identity ?? "new user"} through ${
+      req.query.strategy ?? "any strategy."
+    }`
   );
 
   // TODO: check client_id
@@ -40,13 +41,25 @@ router.get("/initiate", (req, res) => {
     return res.status(500).send("Invalid strategy!");
   }
 
-  // LEFTOFF: Send custom or default page:
+  // TODO: allow custom pages
+  req.session.token = pending.getToken();
+  req.session.strategy = pending.getToken();
 
+  pending.addPending(
+    req.session.strategy,
+    req.query.identity,
+    req.session.token
+  );
+
+  return res.render("default");
+});
+
+router.get("/status", (req, res) => {
   // Keep connection open while authorizing
   const headers = {
     "Content-Type": "text/event-stream",
     Connection: "keep-alive",
-    "Cache-Control": "no-cache"
+    "Cache-Control": "no-cache",
   };
   res.writeHead(200, headers);
 
@@ -54,6 +67,12 @@ router.get("/initiate", (req, res) => {
   req.on("close", () => {
     console.log(`Connection closed`);
   });
+
+  // Adding res to the pending list
+  pending.attach(req.session.token, res);
+
+  // leaving the res open...
+  res.write("data: asdasdawdawd");
 });
 
 router.get("/finalize/:token", (req, res) => {

@@ -2,13 +2,11 @@ import config from "../../config";
 import * as pending from "../pending";
 import * as Push from "pushover-notifications";
 
-let conf = config.methods.find(i => {
-  return i.type == "pushover";
-});
+let conf = config.strategies?.pushover;
 
 const push = new Push({
   user: conf.user,
-  token: conf.token
+  token: conf.token,
 });
 
 export async function initiate(strategyData, userData: any, req, res) {
@@ -29,7 +27,7 @@ export async function initiate(strategyData, userData: any, req, res) {
     url: `${config.url}/authenticate/${strategyData.user}`,
     sound: "pushover",
     device: device,
-    priority: 1
+    priority: 1,
   });
 }
 

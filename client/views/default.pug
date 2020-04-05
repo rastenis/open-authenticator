@@ -1,0 +1,7 @@
+Autenticating with #{strategy}.
+
+script.
+    let source = new EventSource("status");
+    source.onmessage = function(event) {
+        alert(event.data);
+    }; 
