@@ -5,6 +5,8 @@ export interface IPending {
   token: string;
   date: Date;
   identity: string;
+  finalized: boolean;
+  redirect: string;
   res?: Response;
 }
 

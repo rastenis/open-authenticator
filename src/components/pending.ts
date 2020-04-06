@@ -11,7 +11,12 @@ export class Pending {
 
   pending: IPendingMap;
 
-  addPending = async (strategy: string, identity: string, token: string) => {
+  addPending = async (
+    strategy: string,
+    identity: string,
+    redirect: string,
+    token: string
+  ) => {
     if (this.pending[token]) {
       console.log(
         "CRITICAL: Can not override existing pending authentication."
@@ -25,6 +30,8 @@ export class Pending {
       date: new Date(),
       token: this.getToken(),
       identity,
+      finalized: false,
+      redirect,
     };
 
     //   // sending verification request based on auth type
@@ -60,15 +67,33 @@ export class Pending {
     delete this.pending[token];
   };
 
-  confirmPending = async (identifier: string, token: string) => {
-    if (!this.pending[identifier]) {
+  confirmPending = async (token: string) => {
+    if (!this.pending[token]) {
       throw pendingError.nonexistant;
     }
-    if (this.pending[identifier].date.getTime() + 10 * 60 * 1000 < Date.now()) {
+    if (this.pending[token].date.getTime() + 10 * 60 * 1000 < Date.now()) {
       throw pendingError.expired;
     }
     // confirming...
-    this.pending[identifier].res.write("data: confirmed");
+    this.pending[token].finalized = true;
+    this.pending[token].date = new Date(Date.now() + 10 * 60 * 1000);
+
+    this.pending[token].res.write("data: confirmed");
+  };
+
+  isFinalized = async (token: string) => {
+    if (!this.pending[token]) {
+      throw pendingError.nonexistant;
+    }
+    if (this.pending[token].date.getTime() + 10 * 60 * 1000 < Date.now()) {
+      throw pendingError.expired;
+    }
+
+    return this.pending[token].finalized;
+  };
+
+  getRedirectionTarget = (token: string) => {
+    return this.pending[token]?.redirect;
   };
 
   getToken = (): string => {

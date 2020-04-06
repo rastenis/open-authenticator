@@ -1,6 +1,7 @@
 import config from "../../config";
 import * as pending from "../pending";
 import * as Push from "pushover-notifications";
+import { Request, Response } from "express";
 
 let conf = config.strategies?.pushover;
 
@@ -11,13 +12,13 @@ const push = new Push({
 
 export async function initiate(
   token: string,
-  strategyData,
-  userData: any,
+  strategyData: any,
+  identity: string,
   req: Request,
   res: Response
 ) {
   // resolving user (user device in this case. This could also be fetched from a database)
-  let device = userData.device || req.query.identity;
+  let device = req.query.identity;
 
   // send out a notification that redirect the user to /authenticate/{token}
   push.send({
@@ -31,4 +32,6 @@ export async function initiate(
   });
 }
 
-export async function finalize(req: string) {}
+export async function finalize(req: Request, res: Response, confirm: Function) {
+  return confirm();
+}

@@ -12,6 +12,7 @@ router.get("/", (req, res) => {
 
 // client_id:string         - The requesting client id.
 // strategy:string          - Name of strategy
+// redirect:string          - Redirect uri
 // insecure:bool            - true when accessing locally (via http)
 // identity:string          - (Optional) Identity that needs to be verified.
 // strict:bool     - Default:true
@@ -29,6 +30,11 @@ router.get("/initiate", (req, res) => {
     return res.status(500).send("Invalid user!");
   }
 
+  // TODO:
+  if (!req.query.redirect) {
+    return res.status(500).send("No redirect uri provided!");
+  }
+
   req.session.token = frame.pending.getToken();
   req.session.strategy = frame.pending.getToken();
 
@@ -40,7 +46,7 @@ router.get("/initiate", (req, res) => {
   strategies[req.query.strategy].initiate(
     req.session.token,
     config.strategies[req.query.strategy],
-    config.users[req.query.identity]?.data[req.query.strategy],
+    req.query.identity,
     req,
     res
   );
@@ -48,6 +54,7 @@ router.get("/initiate", (req, res) => {
   frame.pending.addPending(
     req.session.strategy,
     req.query.identity,
+    req.query.redirect,
     req.session.token
   );
 
@@ -76,9 +83,39 @@ router.get("/status", (req, res) => {
 });
 
 router.get("/finalize/:token", (req, res) => {
+  if (!req.params?.token) {
+    return res.status(500).send("No token!");
+  }
+
   console.log("Confirming authorization for ", req.params.token);
 
-  frame.pending.confirmPending(req.query.identifier, req.query.token);
+  // If there is a finalization action, call it,
+  // otherwise, just send the finalization to the client.
+  if (strategies[req.params.token].finalize) {
+    strategies[req.params.token].finalize(
+      req.params,
+      frame.pending.confirmPending.bind(req.params.token)
+    );
+  } else {
+    frame.pending.confirmPending(req.params.token);
+  }
 
   res.sendStatus(200);
+});
+
+router.get("/redirect/:token", (req, res) => {
+  if (!req.params?.token) {
+    return res.status(500).send("No token!");
+  }
+
+  console.log("Confirming redirection for ", req.params.token);
+
+  // If there is a finalization action, call it,
+  // otherwise, just send the finalization to the client.
+  if (!frame.pending.isFinalized(req.params.token)) {
+    return res.status(500).send("This authorisation is not finalized!");
+  }
+
+  // TODO: verification
+  return res.redirect(frame.pending.getRedirectionTarget(req.params.token));
 });
