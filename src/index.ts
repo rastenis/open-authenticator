@@ -6,6 +6,7 @@ import * as bodyparser from "body-parser";
 import * as session from "express-session";
 import * as helmet from "helmet";
 import { router } from "./components/routes";
+import { Frame } from "./components/frame";
 
 // app declaration
 const app = express();
@@ -42,6 +43,9 @@ app.use("/", router);
 app.get("*", function (req, res) {
   res.render("404page", {});
 });
+
+// Initiating frame
+export const frame = new Frame();
 
 // http listening (router handles https)
 app.listen(config.port);

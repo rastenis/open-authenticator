@@ -8,6 +8,10 @@ export interface IPending {
   res?: Response;
 }
 
+export interface IPendingMap {
+  [identifier: string]: IPending;
+}
+
 export enum pendingError {
   nonexistant,
   expired,

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import * as pending from "./pending";
+import { frame } from "../index";
 import * as strategies from "./strategies";
 import config from "../config";
 import { setInterval } from "timers";
@@ -29,28 +29,29 @@ router.get("/initiate", (req, res) => {
     return res.status(500).send("Invalid user!");
   }
 
-  // directing to strategy
-  if (strategies[req.query.strategy]) {
-    strategies[req.query.strategy].initiate(
-      config.strategies[req.query.strategy],
-      config.users[req.query.identity]?.data[req.query.strategy],
-      req,
-      res
-    );
-  } else {
+  req.session.token = frame.pending.getToken();
+  req.session.strategy = frame.pending.getToken();
+
+  if (!strategies[req.query.strategy]) {
     return res.status(500).send("Invalid strategy!");
   }
 
-  // TODO: allow custom pages
-  req.session.token = pending.getToken();
-  req.session.strategy = pending.getToken();
+  // directing to strategy
+  strategies[req.query.strategy].initiate(
+    req.session.token,
+    config.strategies[req.query.strategy],
+    config.users[req.query.identity]?.data[req.query.strategy],
+    req,
+    res
+  );
 
-  pending.addPending(
+  frame.pending.addPending(
     req.session.strategy,
     req.query.identity,
     req.session.token
   );
 
+  // TODO: allow custom pages
   return res.render("default", { strategy: req.query.strategy });
 });
 
@@ -65,22 +66,19 @@ router.get("/status", (req, res) => {
   // Cleanup unfinished authorization on close
   req.on("close", () => {
     console.log(`Connection closed`);
-    pending.cancel(req.session.token);
+    frame.pending.cancel(req.session.token);
   });
 
-  // Adding res to the pending list
-  pending.attach(req.session.token, res);
+  // Adding res to the frame.pending list
+  frame.pending.attach(req.session.token, res);
 
-  // leaving the res open...
-  setInterval(() => {
-    res.write("data: test \n\n");
-  }, 2000);
+  // leaving the res open.
 });
 
 router.get("/finalize/:token", (req, res) => {
   console.log("Confirming authorization for ", req.params.token);
 
-  pending.confirmPending(req.query.identifier, req.query.token);
+  frame.pending.confirmPending(req.query.identifier, req.query.token);
 
   res.sendStatus(200);
 });

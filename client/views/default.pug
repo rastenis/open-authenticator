@@ -3,6 +3,11 @@ p Authenticating with #{strategy}.
 script.
     document.addEventListener("DOMContentLoaded", function(){
         const es = new EventSource("status");
-        es.addEventListener("message", event => console.log("ASD"));
+        es.addEventListener("message", event => {
+            let payload = JSON.parse(event);
+            if(payload.finalized){
+                // Requesting a redirect back.
+            }
+        });
     });
 
