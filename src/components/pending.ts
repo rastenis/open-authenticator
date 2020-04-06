@@ -78,7 +78,9 @@ export class Pending {
     this.pending[token].finalized = true;
     this.pending[token].date = new Date(Date.now() + 10 * 60 * 1000);
 
-    this.pending[token].res.write("data: confirmed");
+    this.pending[token].res.write(
+      `data: ${JSON.stringify({ finalized: true })} \n\n`
+    );
   };
 
   isFinalized = async (token: string) => {

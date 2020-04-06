@@ -7,6 +7,7 @@ script.
             let payload = JSON.parse(event);
             if(payload.finalized){
                 // Requesting a redirect back.
+                window.location.href="/redirect";
             }
         });
     });
