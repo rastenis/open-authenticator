@@ -5,7 +5,8 @@ import {
 } from "../interfaces";
 import * as uuid from "uuid";
 import { Response, Request } from "express";
-import { delay } from "./utils";
+import { delay } from "../helpers/utils";
+import { PendingItem } from "./pendingItem";
 
 export class Pending {
   constructor() {}
@@ -28,18 +29,13 @@ export class Pending {
     }
 
     // adding pending
-    this.pending[token] = {
+    this.pending[token] = new PendingItem(
       strategy,
-      date: new Date(),
-      token,
       identity,
-      finalized: false,
       redirect,
-      req,
-      res,
-    };
-
-    req.session.token = token;
+      token,
+      req
+    );
 
     //   // sending verification request based on auth type
     //   if (!methods[method.type]) {
@@ -59,7 +55,7 @@ export class Pending {
     }
 
     // adding pending
-    this.pending[token].res = res;
+    this.pending[token].attach(res);
   };
 
   cancel = async (token: string) => {

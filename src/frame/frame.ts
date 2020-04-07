@@ -1,4 +1,4 @@
-import { Pending } from "./pending";
+import { Pending } from "../pending/pending";
 
 export class Frame {
   constructor() {

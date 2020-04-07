@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { frame } from "../index";
+import { frame } from "./index";
 import * as strategies from "./strategies";
-import config from "../config";
+import config from "./config";
 import { setInterval } from "timers";
 import to from "await-to-js";
 
@@ -146,6 +146,8 @@ router.get("/redirect", (req, res) => {
   if (!frame.pending.isFinalized(req.session.token)) {
     return res.status(500).send("This authorization is not finalized!");
   }
+
+  // constructing verification
 
   // TODO: verification for auth requester
   return res.redirect(frame.pending.getRedirectionTarget(req.session.token));
