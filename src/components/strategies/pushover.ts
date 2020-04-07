@@ -18,7 +18,7 @@ export async function initiate(
   res: Response
 ) {
   // resolving user (user device in this case. This could also be fetched from a database)
-  let device = req.query.identity;
+  let device = identity;
 
   // send out a notification that redirect the user to /authenticate/{token}
   push.send({
@@ -32,6 +32,6 @@ export async function initiate(
   });
 }
 
-export async function finalize(req: Request, res: Response, confirm: Function) {
-  return confirm();
+export async function finalize(req: Request, res: Response) {
+  return;
 }

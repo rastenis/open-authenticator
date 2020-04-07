@@ -3,6 +3,7 @@ import { frame } from "../index";
 import * as strategies from "./strategies";
 import config from "../config";
 import { setInterval } from "timers";
+import to from "await-to-js";
 
 export let router = Router();
 
@@ -12,10 +13,10 @@ router.get("/", (req, res) => {
 
 // client_id:string         - The requesting client id.
 // strategy:string          - Name of strategy
-// redirect:string          - Redirect uri
+// redirect_uri:string      - Redirect uri
 // insecure:bool            - true when accessing locally (via http)
 // identity:string          - (Optional) Identity that needs to be verified.
-// strict:bool     - Default:true
+// strict:bool              - Default:true
 router.get("/initiate", (req, res) => {
   console.log(
     `Initiating authorization for ${req.query.identity ?? "new user"} through ${
@@ -26,17 +27,18 @@ router.get("/initiate", (req, res) => {
   // TODO: check client_id
 
   // Checking user
-  if (req.query.identity && !config.users[req.query.identity]) {
-    return res.status(500).send("Invalid user!");
+  // TODO: any-identity login
+  if (!req.query.identity) {
+    return res.status(500).send("No identity supplied!");
   }
 
   // TODO:
-  if (!req.query.redirect) {
+  if (!req.query.redirect_uri) {
     return res.status(500).send("No redirect uri provided!");
   }
 
+  // generating token
   req.session.token = frame.pending.getToken();
-  req.session.strategy = frame.pending.getToken();
 
   if (!strategies[req.query.strategy]) {
     return res.status(500).send("Invalid strategy!");
@@ -51,10 +53,11 @@ router.get("/initiate", (req, res) => {
     res
   );
 
+  // adding a pending authentication
   frame.pending.addPending(
-    req.session.strategy,
+    req.query.strategy,
     req.query.identity,
-    req.query.redirect,
+    req.query.redirect_uri,
     req.session.token
   );
 
@@ -82,24 +85,34 @@ router.get("/status", (req, res) => {
   // leaving the res open.
 });
 
-router.get("/finalize/:token", (req, res) => {
-  if (!req.params?.token) {
+router.get("/finalize", async (req, res) => {
+  if (!req.query?.token) {
     return res.status(500).send("No token!");
   }
 
-  console.log("Confirming authorization for ", req.params.token);
+  console.log("Confirming authorization for ", req.query.token);
 
   // If there is a finalization action, call it,
   // otherwise, just send the finalization to the client.
-  if (strategies[req.params.token].finalize) {
-    strategies[req.params.token].finalize(
-      req.params,
-      frame.pending.confirmPending.bind(req.params.token)
+  const strategy = frame.pending.getStrategy(req.query.token);
+  if (strategies[strategy].finalize) {
+    let [strategyFinalizeError, strategyFinalizeResult] = await to(
+      strategies[strategy].finalize(req)
     );
+
+    if (strategyFinalizeError) {
+      // TODO: supress based on dev/prod.
+      return res
+        .status(500)
+        .send(
+          "Your authentication could not be finalized!" + strategyFinalizeError
+        );
+    }
   } else {
-    frame.pending.confirmPending(req.params.token);
+    frame.pending.confirmPending(req.query.token);
   }
 
+  // TODO: check if can be redirected immediately.
   res.sendStatus(200);
 });
 

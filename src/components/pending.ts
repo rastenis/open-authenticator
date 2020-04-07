@@ -9,7 +9,7 @@ import { Response } from "express";
 export class Pending {
   constructor() {}
 
-  pending: IPendingMap;
+  pending: IPendingMap = {};
 
   addPending = async (
     strategy: string,
@@ -28,7 +28,7 @@ export class Pending {
     this.pending[token] = {
       strategy,
       date: new Date(),
-      token: this.getToken(),
+      token,
       identity,
       finalized: false,
       redirect,
@@ -98,10 +98,18 @@ export class Pending {
     return this.pending[token]?.redirect;
   };
 
+  getStrategy = (token: string) => {
+    return this.pending[token]?.strategy;
+  };
+
+  getPending = (token: string) => {
+    return this.pending[token];
+  };
+
   getToken = (): string => {
-    const t = "";
-    for (let index = 0; index < 5; index++) {
-      this.splice(t, Math.random() * t.length, 0, uuid.v4());
+    let t = "";
+    for (let index = 0; index < 2; index++) {
+      t = this.splice(t, Math.random() * t.length, 0, uuid.v4());
     }
     return t;
   };

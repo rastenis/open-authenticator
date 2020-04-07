@@ -19,6 +19,7 @@
   "dependencies": {
     "@types/express-session": "^1.17.0",
     "@types/uuid": "^3.4.7",
+    "await-to-js": "^2.1.1",
     "chalk": "^3.0.0",
     "concurrently": "^5.1.0",
     "cors": "^2.8.5",

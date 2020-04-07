@@ -7,13 +7,11 @@ const page = ` <!DOCTYPE html>
 <body>
 
 <div id="demo">
-  <h2>Let AJAX change this text</h2>
-
-  <button type="button" onclick="loadDoc()">Change Content</button>
+  <h2>Log in to see secret content!</h2>
+  <a type="button" href="/login">Login</a></button>
 </div>
 
 </body>
-
 </html> `;
 
 const secretPage = ` <!DOCTYPE html>
@@ -29,13 +27,15 @@ app.get("/", (req, res) => {
   res.send(page);
 });
 
-app.post("/post", (req, res) => {
+app.get("/login", (req, res) => {
   return res.redirect(
-    `http://localhost:${4000}/authorize?client_id=EXAMPLE&type=google&identity=none&redirect_uri=http://localhost:3001/callback`
+    `http://localhost:${80}/initiate?client_id=EXAMPLE&strategy=pushover&identity=matas&redirect_uri=http://localhost:3001/callback`
   );
 });
 
 app.post("/callback", (req, res) => {
-  return res.send(page);
+  // TODO: verify token
+  return res.send(secretPage);
 });
 app.listen(3001);
+console.log("Listening on 3001!");

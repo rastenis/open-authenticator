@@ -9,7 +9,8 @@
     "declaration": true,
     "suppressImplicitAnyIndexErrors": true,
     "outDir": "./dist",
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "sourceMap": true
   },
   "exclude": ["node_modules", "dist"]
 }
