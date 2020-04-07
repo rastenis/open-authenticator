@@ -5,13 +5,6 @@ export interface IPendingMap {
   [identifier: string]: PendingItem;
 }
 
-export enum pendingError {
-  nonexistant,
-  expired,
-  invalidMethod,
-  alreadyExists,
-}
-
-export enum authenticationModuleError {
-  missingConfiguration,
+export interface IIdentityData {
+  [identifier: string]: any;
 }

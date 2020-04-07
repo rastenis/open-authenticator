@@ -4,6 +4,8 @@ import * as strategies from "./strategies";
 import config from "./config";
 import { setInterval } from "timers";
 import to from "await-to-js";
+import { FinishedItem } from "./finished/finishedItem";
+import uuid = require("uuid");
 
 export let router = Router();
 
@@ -12,16 +14,17 @@ router.get("/", (req, res) => {
 });
 
 // client_id:string         - The requesting client id.
-// strategy:string          - Name of strategy
 // redirect_uri:string      - Redirect uri
 // insecure:bool            - true when accessing locally (via http)
-// identity:string          - (Optional) Identity that needs to be verified.
-// strict:bool              - Default:true
-router.get("/initiate", (req, res) => {
+// strategy:string          - (Optional) Name of strategy to use. If not supplied, user is allowed to authenticate any of the enabled strategies.
+// identity:string          - (Optional) Identity that needs to be verified. If not supplied, user will be limited to login strategy provided. If no strategy was sent in, the user can login via any available strategy.
+// identityData:string      - (Optional) Stringified JSON of active identities. If not supplied, one will be returned after the authentication.
+// strict:bool              - Default:true. Disallow strategy choice and force to log in via the provided strategy.
+router.get("/initiate", async (req, res) => {
   console.log(
     `Initiating authorization for ${req.query.identity ?? "new user"} through ${
       req.query.strategy ?? "any strategy."
-    }`
+    } ${req.query.strict == true ? "(strict)" : ""}`
   );
 
   // TODO: check client_id
@@ -32,7 +35,6 @@ router.get("/initiate", (req, res) => {
     return res.status(500).send("No identity supplied!");
   }
 
-  // TODO:
   if (!req.query.redirect_uri) {
     return res.status(500).send("No redirect uri provided!");
   }
@@ -45,13 +47,19 @@ router.get("/initiate", (req, res) => {
   }
 
   // directing to strategy
-  strategies[req.query.strategy].initiate(
-    req.session.token,
-    config.strategies[req.query.strategy],
-    req.query.identity,
-    req,
-    res
+  let [strategyInitiationError] = await to(
+    strategies[req.query.strategy].initiate(
+      req.session.token,
+      config.strategies[req.query.strategy],
+      req.query.identity,
+      req,
+      res
+    )
   );
+
+  if (strategyInitiationError) {
+    return res.status(500).send(strategyInitiationError);
+  }
 
   // adding a pending authentication
   frame.pending.addPending(
@@ -148,6 +156,11 @@ router.get("/redirect", (req, res) => {
   }
 
   // constructing verification
+  frame.finished.addFinished(
+    frame.pending.getStrategy(req.session.token),
+    uuid.v4(),
+    frame.pending.getIdentityData(req.session.token)
+  );
 
   // TODO: verification for auth requester
   return res.redirect(frame.pending.getRedirectionTarget(req.session.token));

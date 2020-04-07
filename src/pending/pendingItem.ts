@@ -1,11 +1,4 @@
-import {
-  IPendingMap,
-  pendingError,
-  authenticationModuleError,
-} from "../interfaces";
-import * as uuid from "uuid";
 import { Response, Request } from "express";
-import { delay } from "../helpers/utils";
 
 export class PendingItem {
   private _strategy: string;
@@ -88,10 +81,5 @@ export class PendingItem {
   attachToken = (token) => {
     // Attaching the token to the initial requester's session
     this._req.session.token = token;
-  };
-
-  attach = (res) => {
-    // Attaching the token to the initial requester's session
-    this._res = res;
   };
 }

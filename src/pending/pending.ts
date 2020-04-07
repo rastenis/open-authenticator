@@ -1,6 +1,6 @@
 import {
   IPendingMap,
-  pendingError,
+  entityError,
   authenticationModuleError,
 } from "../interfaces";
 import * as uuid from "uuid";
@@ -25,7 +25,7 @@ export class Pending {
       console.log(
         "CRITICAL: Can not override existing pending authentication."
       );
-      throw pendingError.alreadyExists;
+      throw entityError.alreadyExists;
     }
 
     // adding pending
@@ -51,11 +51,11 @@ export class Pending {
       console.log(
         "CRITICAL: Can not attach to non-existent pending authentication."
       );
-      throw pendingError.nonexistant;
+      throw entityError.nonexistent;
     }
 
     // adding pending
-    this.pending[token].attach(res);
+    this.pending[token].res = res;
   };
 
   cancel = async (token: string) => {
@@ -63,7 +63,7 @@ export class Pending {
       console.log(
         "CRITICAL: Can not cancel non-existent pending authentication."
       );
-      throw pendingError.nonexistant;
+      throw entityError.nonexistent;
     }
 
     // grace period for redirections.
@@ -75,10 +75,10 @@ export class Pending {
 
   confirmPending = (token: string) => {
     if (!this.pending[token]) {
-      throw pendingError.nonexistant;
+      throw entityError.nonexistent;
     }
     if (this.pending[token].date.getTime() + 10 * 60 * 1000 < Date.now()) {
-      throw pendingError.expired;
+      throw entityError.expired;
     }
     // confirming...
     this.pending[token].finalized = true;
@@ -87,10 +87,10 @@ export class Pending {
 
   isFinalized = async (token: string) => {
     if (!this.pending[token]) {
-      throw pendingError.nonexistant;
+      throw entityError.nonexistent;
     }
     if (this.pending[token].date.getTime() + 10 * 60 * 1000 < Date.now()) {
-      throw pendingError.expired;
+      throw entityError.expired;
     }
 
     return this.pending[token].finalized;
@@ -118,6 +118,14 @@ export class Pending {
       t = this.splice(t, Math.random() * t.length, 0, uuid.v4());
     }
     return t;
+  };
+
+  getIdentityData = (token: string) => {
+    if (!this.pending[token]) {
+      throw entityError.nonexistent;
+    }
+
+    return this.pending[token].identity;
   };
 
   splice = (s, start, delCount, newSubStr): string => {

@@ -27,6 +27,7 @@
     "express": "^4.17.1",
     "express-session": "^1.17.0",
     "helmet": "^3.22.0",
+    "moment": "^2.24.0",
     "path": "^0.12.7",
     "pug": "^2.0.4",
     "pushover-notifications": "^1.2.2",
