@@ -2,6 +2,7 @@ import {
   IPendingMap,
   entityError,
   authenticationModuleError,
+  IIdentities,
 } from "../interfaces";
 import * as uuid from "uuid";
 import { Response, Request } from "express";
@@ -16,6 +17,7 @@ export class Pending {
   addPending = async (
     strategy: string,
     identity: string,
+    identities: IIdentities,
     redirect: string,
     token: string,
     req: Request,
@@ -32,6 +34,7 @@ export class Pending {
     this.pending[token] = new PendingItem(
       strategy,
       identity,
+      identities,
       redirect,
       token,
       req
@@ -120,12 +123,26 @@ export class Pending {
     return t;
   };
 
-  getIdentityData = (token: string) => {
+  getIdentities = (token: string) => {
     if (!this.pending[token]) {
       throw entityError.nonexistent;
     }
 
-    return this.pending[token].identity;
+    return this.pending[token].identities;
+  };
+
+  addIdentity = (token: string, strategy: string, identityData: any) => {
+    if (!this.pending[token]) {
+      throw entityError.nonexistent;
+    }
+
+    // In theory should never happen.
+    if (this.pending[token].identities[strategy]) {
+      console.warn(`WARN: Overriding old identity for ${strategy}.`);
+    }
+
+    this.pending[token].identities[strategy] = identityData;
+    return;
   };
 
   splice = (s, start, delCount, newSubStr): string => {

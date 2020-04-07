@@ -5,6 +5,6 @@ export interface IPendingMap {
   [identifier: string]: PendingItem;
 }
 
-export interface IIdentityData {
+export interface IIdentities {
   [identifier: string]: any;
 }
