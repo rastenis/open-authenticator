@@ -1,5 +1,6 @@
 import config from "../../config";
 import * as pending from "../pending";
+import { IPending } from "../../interfaces/pending";
 import * as Push from "pushover-notifications";
 import { Request, Response } from "express";
 
@@ -32,6 +33,12 @@ export async function initiate(
   });
 }
 
-export async function finalize(req: Request, res: Response) {
+export async function finalize(
+  token: string,
+  strategyData: any,
+  identity: string,
+  req: Request,
+  res: Response
+) {
   return;
 }

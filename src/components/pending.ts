@@ -4,7 +4,8 @@ import {
   authenticationModuleError,
 } from "../interfaces";
 import * as uuid from "uuid";
-import { Response } from "express";
+import { Response, Request } from "express";
+import { delay } from "./utils";
 
 export class Pending {
   constructor() {}
@@ -15,7 +16,9 @@ export class Pending {
     strategy: string,
     identity: string,
     redirect: string,
-    token: string
+    token: string,
+    req: Request,
+    res: Response
   ) => {
     if (this.pending[token]) {
       console.log(
@@ -32,7 +35,11 @@ export class Pending {
       identity,
       finalized: false,
       redirect,
+      req,
+      res,
     };
+
+    req.session.token = token;
 
     //   // sending verification request based on auth type
     //   if (!methods[method.type]) {
@@ -63,11 +70,14 @@ export class Pending {
       throw pendingError.nonexistant;
     }
 
+    // grace period for redirections.
+    await delay(10000);
+
     // deleting pending
     delete this.pending[token];
   };
 
-  confirmPending = async (token: string) => {
+  confirmPending = (token: string) => {
     if (!this.pending[token]) {
       throw pendingError.nonexistant;
     }
@@ -77,10 +87,6 @@ export class Pending {
     // confirming...
     this.pending[token].finalized = true;
     this.pending[token].date = new Date(Date.now() + 10 * 60 * 1000);
-
-    this.pending[token].res.write(
-      `data: ${JSON.stringify({ finalized: true })} \n\n`
-    );
   };
 
   isFinalized = async (token: string) => {
@@ -104,6 +110,10 @@ export class Pending {
 
   getPending = (token: string) => {
     return this.pending[token];
+  };
+
+  getRes = (token: string) => {
+    return this.pending[token].res;
   };
 
   getToken = (): string => {

@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Response, Request } from "express";
 
 export interface IPending {
   strategy: string;
@@ -7,6 +7,7 @@ export interface IPending {
   identity: string;
   finalized: boolean;
   redirect: string;
+  req?: Request;
   res?: Response;
 }
 

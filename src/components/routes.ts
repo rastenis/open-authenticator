@@ -58,7 +58,9 @@ router.get("/initiate", (req, res) => {
     req.query.strategy,
     req.query.identity,
     req.query.redirect_uri,
-    req.session.token
+    req.session.token,
+    req,
+    res
   );
 
   // TODO: allow custom pages
@@ -90,14 +92,21 @@ router.get("/finalize", async (req, res) => {
     return res.status(500).send("No token!");
   }
 
-  console.log("Confirming authorization for ", req.query.token);
+  console.log("Confirming authorization for", req.query.token);
 
   // If there is a finalization action, call it,
   // otherwise, just send the finalization to the client.
-  const strategy = frame.pending.getStrategy(req.query.token);
-  if (strategies[strategy].finalize) {
+  const pending = frame.pending.getPending(req.query.token);
+
+  if (strategies[pending.strategy].finalize) {
     let [strategyFinalizeError, strategyFinalizeResult] = await to(
-      strategies[strategy].finalize(req)
+      strategies[pending.strategy].finalize(
+        pending.token,
+        config.strategies[pending.strategy],
+        pending.identity,
+        req,
+        res
+      )
     );
 
     if (strategyFinalizeError) {
@@ -108,9 +117,20 @@ router.get("/finalize", async (req, res) => {
           "Your authentication could not be finalized!" + strategyFinalizeError
         );
     }
-  } else {
-    frame.pending.confirmPending(req.query.token);
   }
+
+  // Handle the finalization action manually writing headers.
+  if (res.headersSent) {
+    console.log("Not returning");
+    return;
+  }
+
+  frame.pending.confirmPending(req.query.token);
+
+  let waitingRes = frame.pending.getRes(req.query.token);
+
+  // Writing out a finalization
+  waitingRes.write(`data: ${JSON.stringify({ finalized: true })} \n\n`);
 
   // TODO: check if can be redirected immediately.
   res.sendStatus(200);
@@ -121,14 +141,12 @@ router.get("/redirect", (req, res) => {
     return res.status(500).send("No token!");
   }
 
-  console.log("Confirming redirection for ", req.session.token);
-
   // If there is a finalization action, call it,
   // otherwise, just send the finalization to the client.
   if (!frame.pending.isFinalized(req.session.token)) {
-    return res.status(500).send("This authorisation is not finalized!");
+    return res.status(500).send("This authorization is not finalized!");
   }
 
-  // TODO: verification
+  // TODO: verification for auth requester
   return res.redirect(frame.pending.getRedirectionTarget(req.session.token));
 });

@@ -33,7 +33,7 @@ app.get("/login", (req, res) => {
   );
 });
 
-app.post("/callback", (req, res) => {
+app.get("/callback", (req, res) => {
   // TODO: verify token
   return res.send(secretPage);
 });

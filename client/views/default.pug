@@ -4,8 +4,9 @@ script.
     document.addEventListener("DOMContentLoaded", function(){
         const es = new EventSource("status");
         es.addEventListener("message", event => {
-            let payload = JSON.parse(event);
+            let payload = JSON.parse(event.data);
             if(payload.finalized){
+                
                 // Requesting a redirect back.
                 window.location.href="/redirect";
             }
