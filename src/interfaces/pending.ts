@@ -1,27 +1,10 @@
 import { Response, Request } from "express";
-
-export interface IPending {
-  strategy: string;
-  token: string;
-  date: Date;
-  identity: string;
-  finalized: boolean;
-  redirect: string;
-  req?: Request;
-  res?: Response;
-}
+import { PendingItem } from "../pending/pendingItem";
 
 export interface IPendingMap {
-  [identifier: string]: IPending;
+  [identifier: string]: PendingItem;
 }
 
-export enum pendingError {
-  nonexistant,
-  expired,
-  invalidMethod,
-  alreadyExists,
-}
-
-export enum authenticationModuleError {
-  missingConfiguration,
+export interface IIdentities {
+  [identifier: string]: any;
 }

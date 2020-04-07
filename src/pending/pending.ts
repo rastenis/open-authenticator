@@ -1,11 +1,13 @@
 import {
   IPendingMap,
-  pendingError,
+  entityError,
   authenticationModuleError,
+  IIdentities,
 } from "../interfaces";
 import * as uuid from "uuid";
 import { Response, Request } from "express";
-import { delay } from "./utils";
+import { delay } from "../helpers/utils";
+import { PendingItem } from "./pendingItem";
 
 export class Pending {
   constructor() {}
@@ -15,6 +17,7 @@ export class Pending {
   addPending = async (
     strategy: string,
     identity: string,
+    identities: IIdentities,
     redirect: string,
     token: string,
     req: Request,
@@ -24,22 +27,18 @@ export class Pending {
       console.log(
         "CRITICAL: Can not override existing pending authentication."
       );
-      throw pendingError.alreadyExists;
+      throw entityError.alreadyExists;
     }
 
     // adding pending
-    this.pending[token] = {
+    this.pending[token] = new PendingItem(
       strategy,
-      date: new Date(),
-      token,
       identity,
-      finalized: false,
+      identities,
       redirect,
-      req,
-      res,
-    };
-
-    req.session.token = token;
+      token,
+      req
+    );
 
     //   // sending verification request based on auth type
     //   if (!methods[method.type]) {
@@ -55,7 +54,7 @@ export class Pending {
       console.log(
         "CRITICAL: Can not attach to non-existent pending authentication."
       );
-      throw pendingError.nonexistant;
+      throw entityError.nonexistent;
     }
 
     // adding pending
@@ -67,7 +66,7 @@ export class Pending {
       console.log(
         "CRITICAL: Can not cancel non-existent pending authentication."
       );
-      throw pendingError.nonexistant;
+      throw entityError.nonexistent;
     }
 
     // grace period for redirections.
@@ -79,10 +78,10 @@ export class Pending {
 
   confirmPending = (token: string) => {
     if (!this.pending[token]) {
-      throw pendingError.nonexistant;
+      throw entityError.nonexistent;
     }
     if (this.pending[token].date.getTime() + 10 * 60 * 1000 < Date.now()) {
-      throw pendingError.expired;
+      throw entityError.expired;
     }
     // confirming...
     this.pending[token].finalized = true;
@@ -91,10 +90,10 @@ export class Pending {
 
   isFinalized = async (token: string) => {
     if (!this.pending[token]) {
-      throw pendingError.nonexistant;
+      throw entityError.nonexistent;
     }
     if (this.pending[token].date.getTime() + 10 * 60 * 1000 < Date.now()) {
-      throw pendingError.expired;
+      throw entityError.expired;
     }
 
     return this.pending[token].finalized;
@@ -122,6 +121,28 @@ export class Pending {
       t = this.splice(t, Math.random() * t.length, 0, uuid.v4());
     }
     return t;
+  };
+
+  getIdentities = (token: string) => {
+    if (!this.pending[token]) {
+      throw entityError.nonexistent;
+    }
+
+    return this.pending[token].identities;
+  };
+
+  addIdentity = (token: string, strategy: string, identityData: any) => {
+    if (!this.pending[token]) {
+      throw entityError.nonexistent;
+    }
+
+    // In theory should never happen.
+    if (this.pending[token].identities[strategy]) {
+      console.warn(`WARN: Overriding old identity for ${strategy}.`);
+    }
+
+    this.pending[token].identities[strategy] = identityData;
+    return;
   };
 
   splice = (s, start, delCount, newSubStr): string => {

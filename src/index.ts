@@ -1,12 +1,12 @@
 import * as path from "path";
 import config from "./config";
-import { db } from "./components/db";
+import { db } from "./db";
 import * as express from "express";
 import * as bodyparser from "body-parser";
 import * as session from "express-session";
 import * as helmet from "helmet";
-import { router } from "./components/routes";
-import { Frame } from "./components/frame";
+import { router } from "./routes";
+import { Frame } from "./frame/frame";
 
 // app declaration
 const app = express();
