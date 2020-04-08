@@ -5,6 +5,7 @@ import * as strategies from "../strategies";
 import to from "await-to-js";
 import * as crs from "crypto-random-string";
 import { Request, Response } from "express";
+import * as passport from "passport";
 
 export class Frame {
   constructor() {
@@ -14,6 +15,7 @@ export class Frame {
 
   pending: Pending;
   finished: Finished;
+  managedStrategies: [string] = config.managed;
 
   /**
    * Method to initiate authentication flow.
@@ -57,6 +59,17 @@ export class Frame {
       return res.status(500).send("Cannot verify identity without a strategy!");
     }
 
+    if (!redirect_uri) {
+      return res.status(500).send("No redirect uri provided!");
+    }
+
+    // Managed PassportJS strategies
+    if (this.managedStrategies.includes(strategy)) {
+      console.log(`Using managed strategy... (${strategy})`);
+      passport.authenticate(strategy)(req, res);
+      return;
+    }
+
     // Checking user
     if (!identity) {
       // rendering menu for all strategies that do not require an identity.
@@ -69,10 +82,7 @@ export class Frame {
       });
     }
 
-    if (!redirect_uri) {
-      return res.status(500).send("No redirect uri provided!");
-    }
-
+    // Identity is present, so must be a valid strategy.
     if (!strategies[strategy]) {
       return res.status(500).send("Invalid strategy!");
     }
@@ -126,5 +136,14 @@ export class Frame {
       identity: identity,
       timeout: strategies[strategy].timeout,
     });
+  };
+
+  finalizeManagedProxy = (req, res) => {
+    passport.authenticate(req.params.strategy)(req, res, this.finalizeManaged);
+  };
+
+  finalizeManaged = (req, res) => {
+    // save finished
+    // redirect back with code.
   };
 }

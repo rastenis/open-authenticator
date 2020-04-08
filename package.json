@@ -28,6 +28,7 @@
     "express-session": "^1.17.0",
     "helmet": "^3.22.0",
     "moment": "^2.24.0",
+    "passport": "^0.4.1",
     "path": "^0.12.7",
     "pug": "^2.0.4",
     "pushover-notifications": "^1.2.2",

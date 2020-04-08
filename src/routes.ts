@@ -166,3 +166,14 @@ router.post("/verify", (req, res) => {
 
   return res.send(finished);
 });
+
+// route for managed strategy callbacks
+router.get("/managed/:strategy", (req, res) => {
+  if (!req.params?.strategy) {
+    return res.status(500).send("No strategy!");
+  }
+
+  // TODO: extract profile.id
+
+  // TODO: manage redirection back to client
+});
