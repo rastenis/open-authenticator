@@ -14,6 +14,9 @@ export const view = "some-view";
 // Timeout that is shown in the default screen. If not supplied, no time is shown in the authentication screen.
 export const timeout = 60;
 
+// If a strategy requires an identity, then it will not show on the any-identity menu
+export const requiresIdentity = true;
+
 export async function initiate(
   token: string,
   strategyData: any,

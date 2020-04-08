@@ -12,6 +12,8 @@ const push = new Push({
 
 export const timeout = 60;
 
+export const requiresIdentity = true;
+
 export async function initiate(
   token: string,
   strategyData: any,

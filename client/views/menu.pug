@@ -1,0 +1,8 @@
+extends layout
+block content
+    .uk-grid
+        each strategy in strategies
+            //-TODO: disable if already linked
+            .uk-card.uk-card-body.uk-width-1-1
+                a(href=strategy.path) #{strategy.name}
+  
