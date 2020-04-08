@@ -2,10 +2,9 @@ import { Router } from "express";
 import { frame } from "./index";
 import * as strategies from "./strategies";
 import config from "./config";
-import { setInterval } from "timers";
 import to from "await-to-js";
 import { FinishedItem } from "./finished/finishedItem";
-import uuid = require("uuid");
+import * as crs from "crypto-random-string";
 
 export let router = Router();
 
@@ -13,77 +12,31 @@ router.get("/", (req, res) => {
   res.send("OK");
 });
 
-// client_id:string         - The requesting client id.
-// redirect_uri:string      - Redirect uri
-// insecure:bool            - true when accessing locally (via http)
-// strategy:string          - (Optional) Name of strategy to use. If not supplied, user is allowed to authenticate any of the enabled strategies.
-// identity:string          - (Optional) Identity that needs to be verified. If not supplied, user will be limited to login strategy provided. If no strategy was sent in, the user can login via any available strategy.
-// identities:string        - (Optional) Stringified JSON of active identities. If not supplied, one will be returned after the authentication.
-// strict:bool              - Default:true. Disallow strategy choice and force to log in via the provided strategy.
+/**
+ * /INITIATE ROUTE QUERY PARAMETERS:
+ * @param {string} client_id      - Requester's client id
+ * @param {string} redirect_uri   - The desired redirect url
+ * @param {boolean} insecure      - True when accessing locally (via http)
+ * @param {string} strategy       - (Optional) Name of strategy to use. If not supplied, user is allowed to authenticate any of the enabled strategies.
+ * @param {string} identity       - (Optional) Identity that needs to be verified. If not supplied, user will be limited to login strategy provided. If no strategy was sent in, the user can login via any available strategy.
+ * @param {string} identities     - (Optional) Stringified JSON of active identities. If not supplied, one will be returned after the authentication.
+ * @param {boolean} strict        - Default:true. Disallow strategy choice and force to log in via the provided strategy.
+ * @param {Request} req
+ * @param {Response} res
+ * @returns
+ */
 router.get("/initiate", async (req, res) => {
-  console.log(
-    `Initiating authorization for ${req.query.identity ?? "new user"} through ${
-      req.query.strategy ?? "any strategy."
-    } ${req.query.strict == true ? "(strict)" : ""}`
-  );
-
-  // TODO: check client_id
-
-  // Checking user
-  // TODO: any-identity login
-  if (!req.query.identity) {
-    return res.status(500).send("No identity supplied!");
-  }
-
-  if (!req.query.redirect_uri) {
-    return res.status(500).send("No redirect uri provided!");
-  }
-
-  // generating token
-  req.session.token = frame.pending.getToken();
-
-  if (!strategies[req.query.strategy]) {
-    return res.status(500).send("Invalid strategy!");
-  }
-
-  // TODO: Check for conflicting parameters
-
-  // Resolving identities
-  let identities = {};
-  if (req.query.identities) {
-    try {
-      identities = JSON.parse(req.query.identities);
-    } catch {}
-  }
-
-  // directing to strategy
-  let [strategyInitiationError] = await to(
-    strategies[req.query.strategy].initiate(
-      req.session.token,
-      config.strategies[req.query.strategy],
-      req.query.identity,
-      req,
-      res
-    )
-  );
-
-  if (strategyInitiationError) {
-    return res.status(500).send(strategyInitiationError);
-  }
-
-  // adding a pending authentication
-  frame.pending.addPending(
+  frame.initiate(
+    req.query.client_id,
+    req.query.redirect_uri,
+    req.query.insecure,
     req.query.strategy,
     req.query.identity,
-    identities,
-    req.query.redirect_uri,
-    req.session.token,
+    req.query.identities,
+    req.query.strict,
     req,
     res
   );
-
-  // TODO: allow custom pages
-  return res.render("default", { strategy: req.query.strategy });
 });
 
 router.get("/status", (req, res) => {
@@ -115,7 +68,11 @@ router.get("/finalize", async (req, res) => {
 
   // If there is a finalization action, call it,
   // otherwise, just send the finalization to the client.
+
   const pending = frame.pending.getPending(req.query.token);
+  if (!pending) {
+    return res.status(500).send("No such pending authorization!");
+  }
 
   // Performing finalization
   if (strategies[pending.strategy].finalize) {
@@ -182,7 +139,7 @@ router.get("/redirect", (req, res) => {
   }
 
   // constructing verification
-  let code = uuid.v4();
+  let code = crs({ length: 20, type: "numeric" });
   frame.finished.addFinished(
     frame.pending.getStrategy(req.session.token),
     code,

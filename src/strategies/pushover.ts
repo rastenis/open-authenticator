@@ -10,6 +10,9 @@ const push = new Push({
   token: conf.token,
 });
 
+// If a custom view needs to be served,
+// export const view = "pushover";
+
 export async function initiate(
   token: string,
   strategyData: any,

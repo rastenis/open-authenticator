@@ -4,7 +4,6 @@ import {
   authenticationModuleError,
   IIdentities,
 } from "../interfaces";
-import * as uuid from "uuid";
 import { Response, Request } from "express";
 import { delay } from "../helpers/utils";
 import { PendingItem } from "./pendingItem";
@@ -27,7 +26,7 @@ export class Pending {
       console.log(
         "CRITICAL: Can not override existing pending authentication."
       );
-      throw entityError.alreadyExists;
+      throw new Error("Can not override existing pending authentication.");
     }
 
     // adding pending
@@ -39,14 +38,6 @@ export class Pending {
       token,
       req
     );
-
-    //   // sending verification request based on auth type
-    //   if (!methods[method.type]) {
-    //     console.log("Authentication method not yet supported.");
-    //     throw pendingError.invalidMethod;
-    //   }
-
-    //   methods[method.type].notify(identifier, method);
   };
 
   attach = async (token: string, res: Response) => {
@@ -54,7 +45,7 @@ export class Pending {
       console.log(
         "CRITICAL: Can not attach to non-existent pending authentication."
       );
-      throw entityError.nonexistent;
+      throw new Error("Can not attach to non-existent pending authentication.");
     }
 
     // adding pending
@@ -63,10 +54,7 @@ export class Pending {
 
   cancel = async (token: string) => {
     if (!this.pending[token]) {
-      console.log(
-        "CRITICAL: Can not cancel non-existent pending authentication."
-      );
-      throw entityError.nonexistent;
+      throw new Error("Can not cancel non-existent pending authentication.");
     }
 
     // grace period for redirections.
@@ -78,10 +66,10 @@ export class Pending {
 
   confirmPending = (token: string) => {
     if (!this.pending[token]) {
-      throw entityError.nonexistent;
+      throw new Error("Can not confirm non-existent pending authentication.");
     }
     if (this.pending[token].date.getTime() + 10 * 60 * 1000 < Date.now()) {
-      throw entityError.expired;
+      throw new Error("This pending authentication has expired.");
     }
     // confirming...
     this.pending[token].finalized = true;
@@ -90,10 +78,10 @@ export class Pending {
 
   isFinalized = async (token: string) => {
     if (!this.pending[token]) {
-      throw entityError.nonexistent;
+      throw new Error("Can not check non-existent pending authentication.");
     }
     if (this.pending[token].date.getTime() + 10 * 60 * 1000 < Date.now()) {
-      throw entityError.expired;
+      throw new Error("This pending authentication has expired.");
     }
 
     return this.pending[token].finalized;
@@ -115,17 +103,9 @@ export class Pending {
     return this.pending[token].res;
   };
 
-  getToken = (): string => {
-    let t = "";
-    for (let index = 0; index < 2; index++) {
-      t = this.splice(t, Math.random() * t.length, 0, uuid.v4());
-    }
-    return t;
-  };
-
   getIdentities = (token: string) => {
     if (!this.pending[token]) {
-      throw entityError.nonexistent;
+      throw new Error("Can not check non-existent pending authentication.");
     }
 
     return this.pending[token].identities;
@@ -133,7 +113,9 @@ export class Pending {
 
   addIdentity = (token: string, strategy: string, identityData: any) => {
     if (!this.pending[token]) {
-      throw entityError.nonexistent;
+      throw new Error(
+        "Can not add identity to non-existent pending authentication."
+      );
     }
 
     // In theory should never happen.
