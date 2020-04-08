@@ -51,10 +51,8 @@ app.get("/callback", async (req, res) => {
     code: req.query.code,
   });
 
-  console.log("Received", verif.response.data);
-
   // TODO: verify token
-  return res.send(secretPage.replace("RETURNS", verif.response.data));
+  return res.send(secretPage.replace("RETURNS", JSON.stringify(verif.data)));
 });
 app.listen(3001);
 console.log("Listening on 3001!");

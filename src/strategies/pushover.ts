@@ -1,5 +1,5 @@
-import config from "../src/config";
-import * as pending from "../src/pending/pending";
+import config from "../config";
+import * as pending from "../pending/pending";
 import * as Push from "pushover-notifications";
 import { Request, Response } from "express";
 

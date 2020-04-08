@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { frame } from "./index";
-import * as strategies from "../strategies";
+import * as strategies from "./strategies";
 import config from "./config";
 import to from "await-to-js";
 import { FinishedItem } from "./finished/finishedItem";
@@ -26,7 +26,17 @@ router.get("/", (req, res) => {
  * @returns
  */
 router.get("/initiate", async (req, res) => {
-  frame.initiate.call({ ...req.query, req, res });
+  frame.initiate(
+    req.query.client_id,
+    req.query.redirect_uri,
+    req.query.insecure,
+    req.query.strategy,
+    req.query.identity,
+    req.query.identities,
+    req.query.strict,
+    req,
+    res
+  );
 });
 
 router.get("/status", (req, res) => {
@@ -58,7 +68,11 @@ router.get("/finalize", async (req, res) => {
 
   // If there is a finalization action, call it,
   // otherwise, just send the finalization to the client.
+
   const pending = frame.pending.getPending(req.query.token);
+  if (!pending) {
+    return res.status(500).send("No such pending authorization!");
+  }
 
   // Performing finalization
   if (strategies[pending.strategy].finalize) {

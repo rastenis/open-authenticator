@@ -1,7 +1,7 @@
 import { Pending } from "../pending/pending";
 import { Finished } from "../finished/finished";
 import config from "../config";
-import * as strategies from "../../strategies";
+import * as strategies from "../strategies";
 import to from "await-to-js";
 import * as crs from "crypto-random-string";
 import { Request, Response } from "express";
