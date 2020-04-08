@@ -2,7 +2,6 @@ import { Router } from "express";
 import { frame } from "./index";
 import * as strategies from "./strategies";
 import config from "./config";
-import { setInterval } from "timers";
 import to from "await-to-js";
 import { FinishedItem } from "./finished/finishedItem";
 import uuid = require("uuid");
@@ -21,69 +20,7 @@ router.get("/", (req, res) => {
 // identities:string        - (Optional) Stringified JSON of active identities. If not supplied, one will be returned after the authentication.
 // strict:bool              - Default:true. Disallow strategy choice and force to log in via the provided strategy.
 router.get("/initiate", async (req, res) => {
-  console.log(
-    `Initiating authorization for ${req.query.identity ?? "new user"} through ${
-      req.query.strategy ?? "any strategy."
-    } ${req.query.strict == true ? "(strict)" : ""}`
-  );
-
-  // TODO: check client_id
-
-  // Checking user
-  // TODO: any-identity login
-  if (!req.query.identity) {
-    return res.status(500).send("No identity supplied!");
-  }
-
-  if (!req.query.redirect_uri) {
-    return res.status(500).send("No redirect uri provided!");
-  }
-
-  // generating token
-  req.session.token = frame.pending.getToken();
-
-  if (!strategies[req.query.strategy]) {
-    return res.status(500).send("Invalid strategy!");
-  }
-
-  // TODO: Check for conflicting parameters
-
-  // Resolving identities
-  let identities = {};
-  if (req.query.identities) {
-    try {
-      identities = JSON.parse(req.query.identities);
-    } catch {}
-  }
-
-  // directing to strategy
-  let [strategyInitiationError] = await to(
-    strategies[req.query.strategy].initiate(
-      req.session.token,
-      config.strategies[req.query.strategy],
-      req.query.identity,
-      req,
-      res
-    )
-  );
-
-  if (strategyInitiationError) {
-    return res.status(500).send(strategyInitiationError);
-  }
-
-  // adding a pending authentication
-  frame.pending.addPending(
-    req.query.strategy,
-    req.query.identity,
-    identities,
-    req.query.redirect_uri,
-    req.session.token,
-    req,
-    res
-  );
-
-  // TODO: allow custom pages
-  return res.render("default", { strategy: req.query.strategy });
+  frame.initiate.call({ ...req.query, req, res });
 });
 
 router.get("/status", (req, res) => {
