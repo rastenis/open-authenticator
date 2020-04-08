@@ -1,10 +1,14 @@
 doctype html
-include includes/alerts.pug
-include includes/style.pug
 html
-  head
+    head
     meta(name="viewport" content="initial-scale=1,maximum-scale=1")
     title Open Authenticator - #{strategy}
-  body 
-    block content
-   
+    link(rel='stylesheet', href='css/uikit.min.css')
+    script(src='js/uikit.min.js')
+    script(src='js/uikit-icons.min.js')
+    body
+        .uk-container.uk-width-1-2.uk-margin-medium-top
+            H1 Open Authenticator
+            hr.uk-margin-medium-bottom
+            block content
+            

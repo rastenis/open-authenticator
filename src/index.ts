@@ -12,6 +12,7 @@ import { Frame } from "./frame/frame";
 const app = express();
 app.set("port", process.env.PORT || config.port || 3000);
 app.disable("view cache");
+app.use(express.static("client"));
 
 app.use(
   session({

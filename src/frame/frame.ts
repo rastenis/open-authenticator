@@ -58,9 +58,15 @@ export class Frame {
     }
 
     // Checking user
-    // TODO: any-identity logins
     if (!identity) {
-      return res.status(500).send("No identity supplied!");
+      // rendering menu for all strategies that do not require an identity.
+      return res.render("menu", {
+        strategies: Object.keys(strategies)
+          .filter((s) => !strategies[s].requiresIdentity)
+          .map((strategyName) => {
+            name: strategyName;
+          }),
+      });
     }
 
     if (!redirect_uri) {
@@ -117,6 +123,8 @@ export class Frame {
     // TODO: allow custom pages
     return res.render(strategies[strategy].view ?? "default", {
       strategy: strategy,
+      identity: identity,
+      timeout: strategies[strategy].timeout,
     });
   };
 }

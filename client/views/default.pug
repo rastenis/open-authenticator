@@ -1,15 +1,20 @@
-p Authenticating with #{strategy}.
+extends layout
+block content
+    p Authenticating with #{strategy}.
+    p Identity: #{identity}
+    p #{timeout? `You have ${timeout} seconds.`:""}
 
-script.
-    document.addEventListener("DOMContentLoaded", function(){
-        const es = new EventSource("status");
-        es.addEventListener("message", event => {
-            let payload = JSON.parse(event.data);
-            if(payload.finalized){
-                
-                // Requesting a redirect back.
-                window.location.href="/redirect";
-            }
+    script.
+        document.addEventListener("DOMContentLoaded", function(){
+            // Establishing a status checker SSE source
+            const es = new EventSource("status");
+            es.addEventListener("message", event => {
+                let payload = JSON.parse(event.data);
+                if(payload.finalized){
+                    
+                    // Requesting a redirect back.
+                    window.location.href="/redirect";
+                }
+            });
         });
-    });
 
