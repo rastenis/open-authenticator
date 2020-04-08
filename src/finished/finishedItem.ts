@@ -36,10 +36,29 @@ export class FinishedItem {
     this._code = value;
   }
 
+  /**
+   * Creates an instance of FinishedItem.
+   * @param {string} strategy
+   * @param {string} code
+   * @param {IIdentities} identityData
+   * @memberof FinishedItem
+   */
   constructor(strategy: string, code: string, identityData: IIdentities) {
     this._strategy = strategy;
     this._identities = identityData;
     this._expiry = moment().add(10, "minutes");
     this._code = code;
   }
+
+  /**
+   * A method to retrieve a servable representation of a finishedItem object
+   *
+   * @memberof FinishedItem
+   */
+  wrap = () => {
+    return {
+      strategy: this._strategy,
+      identities: this._identities,
+    };
+  };
 }

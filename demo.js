@@ -1,4 +1,7 @@
 const express = require("express");
+const config = require("./config.json");
+
+const axios = require("axios");
 
 let app = express();
 
@@ -19,6 +22,10 @@ const secretPage = ` <!DOCTYPE html>
 <body>
   <h2>This is secret content!</h2>
   <p> You have logged in.</p>
+
+  <p> This is what Open Authenticator returned:</p>
+  <p> RETURNS</p>
+
 </body>
 
 </html> `;
@@ -29,13 +36,25 @@ app.get("/", (req, res) => {
 
 app.get("/login", (req, res) => {
   return res.redirect(
-    `http://localhost:${80}/initiate?client_id=EXAMPLE&strategy=pushover&identity=matas&redirect_uri=http://localhost:3001/callback`
+    `http://localhost:${config.port}/initiate?client_id=EXAMPLE&strategy=pushover&identity=matas&redirect_uri=http://localhost:3001/callback`
   );
 });
 
-app.get("/callback", (req, res) => {
+app.get("/callback", async (req, res) => {
+  if (!req.query.code) {
+    console.log("Authenitcation failed! No code returned.");
+    return;
+  }
+
+  // verifying...
+  let verif = await axios.post(`http://localhost:${config.port}/verify`, {
+    code: req.query.code,
+  });
+
+  console.log("Received", verif.response.data);
+
   // TODO: verify token
-  return res.send(secretPage);
+  return res.send(secretPage.replace("RETURNS", verif.response.data));
 });
 app.listen(3001);
 console.log("Listening on 3001!");

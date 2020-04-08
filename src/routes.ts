@@ -194,20 +194,18 @@ router.get("/redirect", (req, res) => {
   );
 });
 
-router.get("/verify", (req, res) => {
-  if (!req.query?.code) {
+router.post("/verify", (req, res) => {
+  if (!req.body?.code) {
     return res.status(500).send("No code!");
   }
 
   // If there is a finalization action, call it,
   // otherwise, just send the finalization to the client.
-  if (!frame.finished.exists(req.session.token)) {
+  if (!frame.finished.exists(req.body.code)) {
     return res.status(500).send("This authorization data does not exist!");
   }
 
-  let finished = frame.finished.getFinished(req.session.token);
-  delete finished.code;
-  delete finished.expiry;
+  let finished = frame.finished.getFinished(req.body?.code).wrap();
 
   return res.send(finished);
 });

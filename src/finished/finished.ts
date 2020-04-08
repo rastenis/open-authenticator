@@ -28,7 +28,7 @@ export class Finished {
   };
 
   exists = (code: string) => {
-    return code && !this.finished[code];
+    return code && this.finished[code];
   };
 
   getFinished = (code: string) => {
