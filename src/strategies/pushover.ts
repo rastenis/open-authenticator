@@ -10,8 +10,7 @@ const push = new Push({
   token: conf.token,
 });
 
-// If a custom view needs to be served,
-// export const view = "pushover";
+export const timeout = 60;
 
 export async function initiate(
   token: string,

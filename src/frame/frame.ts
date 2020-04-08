@@ -117,6 +117,8 @@ export class Frame {
     // TODO: allow custom pages
     return res.render(strategies[strategy].view ?? "default", {
       strategy: strategy,
+      identity: identity,
+      timeout: strategies[strategy].timeout,
     });
   };
 }
