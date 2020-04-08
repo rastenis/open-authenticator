@@ -1,8 +1,9 @@
 import { Pending } from "../pending/pending";
 import { Finished } from "../finished/finished";
 import config from "../config";
-import * as strategies from "../strategies";
+import * as strategies from "../../strategies";
 import to from "await-to-js";
+import * as crs from "crypto-random-string";
 import { Request, Response } from "express";
 
 export class Frame {
@@ -17,13 +18,13 @@ export class Frame {
   /**
    * Method to initiate authentication flow.
    *
-   * @param {string} client_id
-   * @param {string} redirect_uri
-   * @param {boolean} insecure
-   * @param {string} strategy
-   * @param {string} identity
-   * @param {string} identities
-   * @param {boolean} strict
+   * @param {string} client_id      - Requester's client id
+   * @param {string} redirect_uri   - The desired redirect url
+   * @param {boolean} insecure      - True when accessing locally (via http)
+   * @param {string} strategy       - (Optional) Name of strategy to use. If not supplied, user is allowed to authenticate any of the enabled strategies.
+   * @param {string} identity       - (Optional) Identity that needs to be verified. If not supplied, user will be limited to login strategy provided. If no strategy was sent in, the user can login via any available strategy.
+   * @param {string} identities     - (Optional) Stringified JSON of active identities. If not supplied, one will be returned after the authentication.
+   * @param {boolean} strict        - Default:true. Disallow strategy choice and force to log in via the provided strategy.
    * @param {Request} req
    * @param {Response} res
    * @returns
@@ -50,6 +51,12 @@ export class Frame {
       return res.status(500).send("Unregistered client_id!");
     }
 
+    // Checking for conflicting parameters
+    // (strategy && !identity) is allowed, because some strategies do not require identities prior.
+    if (identity && !strategy) {
+      return res.status(500).send("Cannot verify identity without a strategy!");
+    }
+
     // Checking user
     // TODO: any-identity logins
     if (!identity) {
@@ -60,14 +67,12 @@ export class Frame {
       return res.status(500).send("No redirect uri provided!");
     }
 
-    // generating token
-    req.session.token = this.pending.getToken();
-
     if (!strategies[strategy]) {
       return res.status(500).send("Invalid strategy!");
     }
 
-    // TODO: Check for conflicting parameters
+    // generating token
+    req.session.token = crs({ length: 30 });
 
     // Resolving identities
     let parsedIdentities = {};
@@ -89,21 +94,29 @@ export class Frame {
     );
 
     if (strategyInitiationError) {
-      return res.status(500).send(strategyInitiationError);
+      return res.status(500).send(strategyInitiationError.message);
     }
 
     // adding a pending authentication
-    this.pending.addPending(
-      strategy,
-      identity,
-      parsedIdentities,
-      redirect_uri,
-      req.session.token,
-      req,
-      res
+    let [addPendingError] = await to(
+      this.pending.addPending(
+        strategy,
+        identity,
+        parsedIdentities,
+        redirect_uri,
+        req.session.token,
+        req,
+        res
+      )
     );
 
+    if (addPendingError) {
+      return res.status(500).send(addPendingError.message);
+    }
+
     // TODO: allow custom pages
-    return res.render("default", { strategy: strategy });
+    return res.render(strategies[strategy].view ?? "default", {
+      strategy: strategy,
+    });
   };
 }

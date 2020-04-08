@@ -20,7 +20,8 @@ export class Finished {
       console.log(
         "CRITICAL: Can not override existing finished authentication."
       );
-      throw entityError.alreadyExists;
+
+      throw new Error("Can not override existing finished authentication.");
     }
 
     // adding finished

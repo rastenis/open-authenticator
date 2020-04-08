@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { frame } from "./index";
-import * as strategies from "./strategies";
+import * as strategies from "../strategies";
 import config from "./config";
 import to from "await-to-js";
 import { FinishedItem } from "./finished/finishedItem";
-import uuid = require("uuid");
+import * as crs from "crypto-random-string";
 
 export let router = Router();
 
@@ -12,13 +12,19 @@ router.get("/", (req, res) => {
   res.send("OK");
 });
 
-// client_id:string         - The requesting client id.
-// redirect_uri:string      - Redirect uri
-// insecure:bool            - true when accessing locally (via http)
-// strategy:string          - (Optional) Name of strategy to use. If not supplied, user is allowed to authenticate any of the enabled strategies.
-// identity:string          - (Optional) Identity that needs to be verified. If not supplied, user will be limited to login strategy provided. If no strategy was sent in, the user can login via any available strategy.
-// identities:string        - (Optional) Stringified JSON of active identities. If not supplied, one will be returned after the authentication.
-// strict:bool              - Default:true. Disallow strategy choice and force to log in via the provided strategy.
+/**
+ * /INITIATE ROUTE QUERY PARAMETERS:
+ * @param {string} client_id      - Requester's client id
+ * @param {string} redirect_uri   - The desired redirect url
+ * @param {boolean} insecure      - True when accessing locally (via http)
+ * @param {string} strategy       - (Optional) Name of strategy to use. If not supplied, user is allowed to authenticate any of the enabled strategies.
+ * @param {string} identity       - (Optional) Identity that needs to be verified. If not supplied, user will be limited to login strategy provided. If no strategy was sent in, the user can login via any available strategy.
+ * @param {string} identities     - (Optional) Stringified JSON of active identities. If not supplied, one will be returned after the authentication.
+ * @param {boolean} strict        - Default:true. Disallow strategy choice and force to log in via the provided strategy.
+ * @param {Request} req
+ * @param {Response} res
+ * @returns
+ */
 router.get("/initiate", async (req, res) => {
   frame.initiate.call({ ...req.query, req, res });
 });
@@ -119,7 +125,7 @@ router.get("/redirect", (req, res) => {
   }
 
   // constructing verification
-  let code = uuid.v4();
+  let code = crs({ length: 20, type: "numeric" });
   frame.finished.addFinished(
     frame.pending.getStrategy(req.session.token),
     code,
