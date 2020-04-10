@@ -1,7 +1,7 @@
 import { Response, Request } from "express";
 import * as moment from "moment";
 
-export class FinishedItem {
+export class IFinished {
   private _strategy: string;
   private _token: string;
   private _identity: any;
@@ -58,7 +58,7 @@ export class FinishedItem {
    * @param {string} strategy
    * @param {string} identity
    * @param {string} data
-   * @memberof FinishedItem
+   * @memberof IFinished
    */
   constructor(
     token: string,
@@ -78,7 +78,7 @@ export class FinishedItem {
   /**
    * A method to retrieve a servable representation of a finishedItem object
    *
-   * @memberof FinishedItem
+   * @memberof IFinished
    */
   wrap = () => {
     return {
