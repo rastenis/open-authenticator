@@ -23,7 +23,7 @@ router.get("/", (req, res) => {
  * @param {Response} res
  * @returns
  */
-router.get("/initiate", async (req, res) => {
+router.get("/initiate", async (req, res, next) => {
   frame.initiate(
     <string>req.query.client_id,
     <string>req.query.redirect_uri,
@@ -32,7 +32,8 @@ router.get("/initiate", async (req, res) => {
     <string>req.query.identity,
     <boolean>(<unknown>req.query.strict),
     req,
-    res
+    res,
+    next
   );
 });
 
@@ -162,10 +163,14 @@ router.post("/verify", (req, res) => {
 });
 
 // route for managed strategy callbacks
-router.get("/managed/:strategy", (req, res) => {
-  if (!req.params?.strategy) {
-    return res.status(500).send("No strategy!");
-  }
+router.get(
+  "/managed/:strategy",
+  (req, res, next) => {
+    if (!req.params?.strategy) {
+      return res.status(500).send("No strategy!");
+    }
 
-  frame.finalizeManagedProxy(req, res);
-});
+    frame.finalizeManagedProxy(req, res, next);
+  },
+  frame.finalizeManaged
+);

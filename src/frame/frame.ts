@@ -6,6 +6,8 @@ import to from "await-to-js";
 import * as crs from "crypto-random-string";
 import { Request, Response } from "express";
 import * as passport from "passport";
+import conf from "../managed/configs";
+conf(passport);
 
 export class Frame {
   constructor() {
@@ -38,7 +40,8 @@ export class Frame {
     identity: string,
     strict: boolean,
     req: Request,
-    res: Response
+    res: Response,
+    next: any
   ) => {
     console.log(
       `Initiating authorization for ${identity ?? "new user"} through ${
@@ -67,7 +70,10 @@ export class Frame {
       req.session.redirect = redirect_uri;
 
       console.log(`Using managed strategy... (${strategy})`);
-      passport.authenticate(strategy)(req, res);
+      passport.authenticate(
+        strategy,
+        config.strategies[strategy]?.params ?? {}
+      )(req, res, next);
       return;
     }
 
@@ -130,8 +136,8 @@ export class Frame {
     });
   };
 
-  finalizeManagedProxy = (req, res) => {
-    passport.authenticate(req.params.strategy)(req, res, this.finalizeManaged);
+  finalizeManagedProxy = (req, res, next) => {
+    passport.authenticate(req.params.strategy)(req, res, next);
   };
 
   finalizeManaged = (req, res) => {
@@ -140,18 +146,12 @@ export class Frame {
     let code = crs({ length: 20, type: "numeric" });
 
     this.finished.addFinished(
-      req.query.token,
+      "",
       code,
       req.params?.strategy,
       req.user?.identity,
       req.user?.data
     );
-
-    // Handle the finalization action manually writing headers.
-    if (res.headersSent) {
-      console.log("Not returning");
-      return;
-    }
 
     return res.redirect(`${req.session.redirect}?code=${code}`);
   };
