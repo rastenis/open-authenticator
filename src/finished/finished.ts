@@ -2,7 +2,6 @@ import {
   IFinishedMap,
   entityError,
   authenticationModuleError,
-  IIdentities,
 } from "../interfaces";
 import { FinishedItem } from "./finishedItem";
 
@@ -11,10 +10,21 @@ export class Finished {
 
   finished: IFinishedMap = {};
 
+  /**
+   * A method to register a finished authorization
+   *
+   * @param {string} token
+   * @param {string} code
+   * @param {string} strategy
+   * @param {*} identity
+   * @param {*} data
+   */
   addFinished = async (
-    strategy: string,
+    token: string,
     code: string,
-    identityData: IIdentities
+    strategy: string,
+    identity: any,
+    data: any
   ) => {
     if (this.finished[code]) {
       console.log(
@@ -25,7 +35,13 @@ export class Finished {
     }
 
     // adding finished
-    this.finished[code] = new FinishedItem(strategy, code, identityData);
+    this.finished[code] = new FinishedItem(
+      token,
+      code,
+      strategy,
+      identity,
+      data
+    );
   };
 
   exists = (code: string) => {

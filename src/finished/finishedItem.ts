@@ -1,12 +1,13 @@
 import { Response, Request } from "express";
 import * as moment from "moment";
-import { IIdentities } from "../interfaces";
 
 export class FinishedItem {
   private _strategy: string;
+  private _token: string;
+  private _identity: any;
+  private _data: any;
   private _code: string;
   private _expiry: moment.Moment;
-  private _identities: IIdentities;
 
   public get expiry(): moment.Moment {
     return this._expiry;
@@ -22,13 +23,6 @@ export class FinishedItem {
     this._strategy = value;
   }
 
-  public get identityData(): IIdentities {
-    return this._identities;
-  }
-  public set identityData(value: IIdentities) {
-    this._identities = value;
-  }
-
   public get code(): string {
     return this._code;
   }
@@ -36,18 +30,49 @@ export class FinishedItem {
     this._code = value;
   }
 
+  public get token(): string {
+    return this._token;
+  }
+  public set token(value: string) {
+    this._token = value;
+  }
+
+  public get identity(): any {
+    return this._identity;
+  }
+  public set identity(value: any) {
+    this._identity = value;
+  }
+
+  public get data(): any {
+    return this._data;
+  }
+  public set data(value: any) {
+    this._data = value;
+  }
+
   /**
-   * Creates an instance of FinishedItem.
-   * @param {string} strategy
+   *Creates an instance of FinishedItem.
+   * @param {string} token
    * @param {string} code
-   * @param {IIdentities} identityData
+   * @param {string} strategy
+   * @param {string} identity
+   * @param {string} data
    * @memberof FinishedItem
    */
-  constructor(strategy: string, code: string, identityData: IIdentities) {
+  constructor(
+    token: string,
+    code: string,
+    strategy: string,
+    identity: string,
+    data: string
+  ) {
     this._strategy = strategy;
-    this._identities = identityData;
     this._expiry = moment().add(10, "minutes");
     this._code = code;
+    this._token = token;
+    this._identity = identity;
+    this._data = data;
   }
 
   /**
@@ -58,7 +83,8 @@ export class FinishedItem {
   wrap = () => {
     return {
       strategy: this._strategy,
-      identities: this._identities,
+      identity: this._identity,
+      data: this._data,
     };
   };
 }

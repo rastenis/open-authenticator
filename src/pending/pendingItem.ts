@@ -1,12 +1,10 @@
 import { Response, Request } from "express";
-import { IIdentities } from "../interfaces";
 
 export class PendingItem {
   private _strategy: string;
   private _token: string;
   private _date: Date;
   private _identity: string;
-  private _identities: IIdentities;
   private _finalized: boolean;
   private _redirect: string;
   private _req?: Request;
@@ -60,23 +58,15 @@ export class PendingItem {
   public set res(value: Response) {
     this._res = value;
   }
-  public get identities(): IIdentities {
-    return this._identities;
-  }
-  public set identities(value: IIdentities) {
-    this._identities = value;
-  }
 
   constructor(
     strategy: string,
     identity: string,
-    identities: IIdentities,
     redirect: string,
     token: string,
     req: Request
   ) {
     this._identity = identity;
-    this._identities = identities;
     this._strategy = strategy;
     this._redirect = redirect;
     this._token = token;

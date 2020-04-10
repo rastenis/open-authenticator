@@ -37,5 +37,11 @@ export async function finalize(
 ) {
   // /authenticate/{token} has been reached. The authentication action has been performed.
   // a simple return will finalize the flow, although more checks can be done if needed.
-  return;
+
+  // You can return an identifier and a data object (user profile data for example.)
+  //   return {
+  //     identity: "IDENTITY_TOKEN",
+  //     data: "USER_PROFILE_OR_DATA_IF_APPLICABLE",
+  //   };
+  return {};
 }

@@ -19,7 +19,6 @@ router.get("/", (req, res) => {
  * @param {boolean} insecure      - True when accessing locally (via http)
  * @param {string} strategy       - (Optional) Name of strategy to use. If not supplied, user is allowed to authenticate any of the enabled strategies.
  * @param {string} identity       - (Optional) Identity that needs to be verified. If not supplied, user will be limited to login strategy provided. If no strategy was sent in, the user can login via any available strategy.
- * @param {string} identities     - (Optional) Stringified JSON of active identities. If not supplied, one will be returned after the authentication.
  * @param {boolean} strict        - Default:true. Disallow strategy choice and force to log in via the provided strategy.
  * @param {Request} req
  * @param {Response} res
@@ -32,7 +31,6 @@ router.get("/initiate", async (req, res) => {
     req.query.insecure,
     req.query.strategy,
     req.query.identity,
-    req.query.identities,
     req.query.strict,
     req,
     res
@@ -74,9 +72,11 @@ router.get("/finalize", async (req, res) => {
     return res.status(500).send("No such pending authorization!");
   }
 
+  let strategyFinalizeError, strategyFinalizeResult;
+
   // Performing finalization
   if (strategies[pending.strategy].finalize) {
-    let [strategyFinalizeError, strategyFinalizeResult] = await to(
+    [strategyFinalizeError, strategyFinalizeResult] = await to(
       strategies[pending.strategy].finalize(
         pending.token,
         config.strategies[pending.strategy],
@@ -94,20 +94,17 @@ router.get("/finalize", async (req, res) => {
           "Your authentication could not be finalized!" + strategyFinalizeError
         );
     }
-
-    // attaching the identity data
-    frame.pending.addIdentity(
-      req.query.token,
-      pending.strategy,
-      strategyFinalizeResult
-    );
   }
 
+  let code = crs({ length: 20, type: "numeric" });
+
   // Strategy did not handle the identity data, so we only add the identifier as data.
-  frame.pending.addIdentity(
+  frame.finished.addFinished(
     req.query.token,
+    code,
     pending.strategy,
-    pending.identity
+    strategyFinalizeResult?.identity ?? pending.identity,
+    strategyFinalizeResult?.data ?? {}
   );
 
   // Handle the finalization action manually writing headers.
@@ -117,8 +114,10 @@ router.get("/finalize", async (req, res) => {
   }
 
   frame.pending.confirmPending(req.query.token);
-
   let waitingRes = frame.pending.getRes(req.query.token);
+
+  // attaching code
+  frame.pending.getReq(req.query.token).session.code = code;
 
   // Writing out a finalization
   waitingRes.write(`data: ${JSON.stringify({ finalized: true })} \n\n`);
@@ -138,16 +137,18 @@ router.get("/redirect", (req, res) => {
     return res.status(500).send("This authorization is not finalized!");
   }
 
-  // constructing verification
-  let code = crs({ length: 20, type: "numeric" });
-  frame.finished.addFinished(
-    frame.pending.getStrategy(req.session.token),
-    code,
-    frame.pending.getIdentities(req.session.token)
-  );
+  if (!frame.finished.exists(req.session.code)) {
+    return res.status(500).send("This authorization is not finished!");
+  }
+
+  if (!frame.finished.exists(req.session.code)) {
+    return res.status(500).send("This authorization is not finished!");
+  }
 
   return res.redirect(
-    `${frame.pending.getRedirectionTarget(req.session.token)}?code=${code}`
+    `${frame.pending.getRedirectionTarget(req.session.token)}?code=${
+      frame.finished.getFinished(req.session.code).code
+    }`
   );
 });
 

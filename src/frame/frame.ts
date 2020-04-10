@@ -25,7 +25,6 @@ export class Frame {
    * @param {boolean} insecure      - True when accessing locally (via http)
    * @param {string} strategy       - (Optional) Name of strategy to use. If not supplied, user is allowed to authenticate any of the enabled strategies.
    * @param {string} identity       - (Optional) Identity that needs to be verified. If not supplied, user will be limited to login strategy provided. If no strategy was sent in, the user can login via any available strategy.
-   * @param {string} identities     - (Optional) Stringified JSON of active identities. If not supplied, one will be returned after the authentication.
    * @param {boolean} strict        - Default:true. Disallow strategy choice and force to log in via the provided strategy.
    * @param {Request} req
    * @param {Response} res
@@ -37,7 +36,6 @@ export class Frame {
     insecure: boolean,
     strategy: string,
     identity: string,
-    identities: string,
     strict: boolean,
     req: Request,
     res: Response
@@ -90,14 +88,6 @@ export class Frame {
     // generating token
     req.session.token = crs({ length: 30 });
 
-    // Resolving identities
-    let parsedIdentities = {};
-    if (identities) {
-      try {
-        parsedIdentities = JSON.parse(identities);
-      } catch {}
-    }
-
     // directing to strategy
     let [strategyInitiationError] = await to(
       strategies[strategy].initiate(
@@ -118,7 +108,6 @@ export class Frame {
       this.pending.addPending(
         strategy,
         identity,
-        parsedIdentities,
         redirect_uri,
         req.session.token,
         req,
