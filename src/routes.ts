@@ -25,12 +25,12 @@ router.get("/", (req, res) => {
  */
 router.get("/initiate", async (req, res) => {
   frame.initiate(
-    req.query.client_id,
-    req.query.redirect_uri,
-    req.query.insecure,
-    req.query.strategy,
-    req.query.identity,
-    req.query.strict,
+    <string>req.query.client_id,
+    <string>req.query.redirect_uri,
+    <boolean>(<unknown>req.query.insecure),
+    <string>req.query.strategy,
+    <string>req.query.identity,
+    <boolean>(<unknown>req.query.strict),
     req,
     res
   );
@@ -66,7 +66,7 @@ router.get("/finalize", async (req, res) => {
   // If there is a finalization action, call it,
   // otherwise, just send the finalization to the client.
 
-  const pending = frame.pending.getPending(req.query.token);
+  const pending = frame.pending.getPending(<string>req.query.token);
   if (!pending) {
     return res.status(500).send("No such pending authorization!");
   }
@@ -99,7 +99,7 @@ router.get("/finalize", async (req, res) => {
 
   // Strategy did not handle the identity data, so we only add the identifier as data.
   frame.finished.addFinished(
-    req.query.token,
+    <string>req.query.token,
     code,
     pending.strategy,
     strategyFinalizeResult?.identity ?? pending.identity,
@@ -112,8 +112,8 @@ router.get("/finalize", async (req, res) => {
     return;
   }
 
-  frame.pending.confirmPending(req.query.token);
-  let waitingRes = frame.pending.getRes(req.query.token);
+  frame.pending.confirmPending(<string>req.query.token);
+  let waitingRes = frame.pending.getRes(<string>req.query.token);
 
   // Writing out a finalization
   waitingRes.write(`data: ${JSON.stringify({ finalized: true })} \n\n`);
@@ -167,7 +167,5 @@ router.get("/managed/:strategy", (req, res) => {
     return res.status(500).send("No strategy!");
   }
 
-  // TODO: extract profile.id
-
-  // TODO: manage redirection back to client
+  frame.finalizeManagedProxy(req, res);
 });

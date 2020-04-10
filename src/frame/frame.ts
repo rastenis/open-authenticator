@@ -63,6 +63,9 @@ export class Frame {
 
     // Managed PassportJS strategies
     if (this.managedStrategies.includes(strategy)) {
+      // attaching redirection url to session
+      req.session.redirect = redirect_uri;
+
       console.log(`Using managed strategy... (${strategy})`);
       passport.authenticate(strategy)(req, res);
       return;
@@ -132,7 +135,24 @@ export class Frame {
   };
 
   finalizeManaged = (req, res) => {
-    // save finished
-    // redirect back with code.
+    // Strategy did not handle the identity data, so we only add the identifier as data.
+
+    let code = crs({ length: 20, type: "numeric" });
+
+    this.finished.addFinished(
+      req.query.token,
+      code,
+      req.params?.strategy,
+      req.user?.identity,
+      req.user?.data
+    );
+
+    // Handle the finalization action manually writing headers.
+    if (res.headersSent) {
+      console.log("Not returning");
+      return;
+    }
+
+    return res.redirect(`${req.session.redirect}?code=${code}`);
   };
 }
