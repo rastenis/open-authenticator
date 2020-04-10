@@ -1,6 +1,6 @@
 import { Response, Request } from "express";
 
-export class PendingItem {
+export class IPendingItem {
   private _strategy: string;
   private _token: string;
   private _date: Date;

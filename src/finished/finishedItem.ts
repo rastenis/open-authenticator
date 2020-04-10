@@ -1,7 +1,7 @@
 import { Response, Request } from "express";
 import * as moment from "moment";
 
-export class IFinished {
+export class IFinishedItem {
   private _strategy: string;
   private _token: string;
   private _identity: any;

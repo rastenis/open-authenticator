@@ -5,7 +5,7 @@ import {
 } from "../interfaces";
 import { Response, Request } from "express";
 import { delay } from "../helpers/utils";
-import { PendingItem } from "./pendingItem";
+import { IPendingItem } from "./pendingItem";
 
 export class Pending {
   constructor() {}
@@ -28,7 +28,7 @@ export class Pending {
     }
 
     // adding pending
-    this.pending[token] = new PendingItem(
+    this.pending[token] = new IPendingItem(
       strategy,
       identity,
       redirect,

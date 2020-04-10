@@ -3,8 +3,7 @@ import {
   entityError,
   authenticationModuleError,
 } from "../interfaces";
-import { IFinished } from "./finishedItem";
-import { delay } from "../helpers/utils";
+import { IFinishedItem } from "./finishedItem";
 import moment = require("moment");
 
 export class Finished {
@@ -37,7 +36,13 @@ export class Finished {
     }
 
     // adding finished
-    this.finished[code] = new IFinished(token, code, strategy, identity, data);
+    this.finished[code] = new IFinishedItem(
+      token,
+      code,
+      strategy,
+      identity,
+      data
+    );
   };
 
   exists = (code: string) => {
@@ -59,7 +64,7 @@ export class Finished {
     );
   };
 
-  checkPurge = (finished: IFinished) => {
+  checkPurge = (finished: IFinishedItem) => {
     if (moment().isAfter(finished.expiry)) {
       delete this.finished[finished.code];
     }
