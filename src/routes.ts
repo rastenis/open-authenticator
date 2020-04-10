@@ -116,9 +116,6 @@ router.get("/finalize", async (req, res) => {
   frame.pending.confirmPending(req.query.token);
   let waitingRes = frame.pending.getRes(req.query.token);
 
-  // attaching code
-  frame.pending.getReq(req.query.token).session.code = code;
-
   // Writing out a finalization
   waitingRes.write(`data: ${JSON.stringify({ finalized: true })} \n\n`);
 
@@ -137,17 +134,14 @@ router.get("/redirect", (req, res) => {
     return res.status(500).send("This authorization is not finalized!");
   }
 
-  if (!frame.finished.exists(req.session.code)) {
-    return res.status(500).send("This authorization is not finished!");
-  }
-
-  if (!frame.finished.exists(req.session.code)) {
+  let finished = frame.finished.getByToken(req.session.token);
+  if (!finished) {
     return res.status(500).send("This authorization is not finished!");
   }
 
   return res.redirect(
     `${frame.pending.getRedirectionTarget(req.session.token)}?code=${
-      frame.finished.getFinished(req.session.code).code
+      finished.code
     }`
   );
 });

@@ -51,4 +51,13 @@ export class Finished {
   getFinished = (code: string) => {
     return this.finished[code];
   };
+
+  getByToken = (token: string) => {
+    return (
+      token &&
+      Object.values(this.finished).find((f) => {
+        return f.token === token;
+      })
+    );
+  };
 }
