@@ -26,7 +26,7 @@ const secretPage = ` <!DOCTYPE html>
   <p> You have logged in.</p>
 
   <p> This is what Open Authenticator returned:</p>
-  <p> RETURNS</p>
+  <textarea style="width:1000px; height:1000px;"> RETURNS </textarea>
 
 </body>
 
@@ -38,13 +38,13 @@ app.get("/", (req, res) => {
 
 app.get("/login", (req, res) => {
   return res.redirect(
-    `http://localhost:${config.port}/initiate?client_id=EXAMPLE&strategy=pushover&identity=matas&redirect_uri=http://localhost:3001/callback`
+    `${config.url}:${config.port}/initiate?client_id=EXAMPLE&strategy=pushover&identity=matas&redirect_uri=http://localhost:3001/callback`
   );
 });
 
 app.get("/loginGoogle", (req, res) => {
   return res.redirect(
-    `http://localhost:${config.port}/initiate?client_id=EXAMPLE&strategy=google&redirect_uri=http://localhost:3001/callback`
+    `${config.url}:${config.port}/initiate?client_id=EXAMPLE&strategy=google&redirect_uri=http://localhost:3001/callback`
   );
 });
 
@@ -55,12 +55,14 @@ app.get("/callback", async (req, res) => {
   }
 
   // verifying...
-  let verif = await axios.post(`http://localhost:${config.port}/verify`, {
+  let verif = await axios.post(`${config.url}:${config.port}/verify`, {
     code: req.query.code,
   });
 
   // TODO: verify token
-  return res.send(secretPage.replace("RETURNS", JSON.stringify(verif.data)));
+  return res.send(
+    secretPage.replace("RETURNS", JSON.stringify(verif.data, null, 4))
+  );
 });
 app.listen(3001);
 console.log("Listening on 3001!");
