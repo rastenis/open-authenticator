@@ -98,6 +98,9 @@ router.get("/finalize", async (req, res) => {
 
   let code = crs({ length: 20, type: "numeric" });
 
+  // Removing pending
+  frame.pending.remove(<string>req.query.token);
+
   // Strategy did not handle the identity data, so we only add the identifier as data.
   frame.finished.addFinished(
     <string>req.query.token,
@@ -172,5 +175,7 @@ router.get(
 
     frame.finalizeManagedProxy(req, res, next);
   },
-  frame.finalizeManaged
+  (req, res) => {
+    frame.finalizeManaged(req, res);
+  }
 );

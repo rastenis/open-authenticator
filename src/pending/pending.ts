@@ -107,4 +107,16 @@ export class Pending {
   splice = (s, start, delCount, newSubStr): string => {
     return s.slice(0, start) + newSubStr + s.slice(start + Math.abs(delCount));
   };
+
+  remove = async (token: string) => {
+    if (!this.pending[token]) {
+      console.log(
+        "CRITICAL: Can not delete non-existent pending authentication."
+      );
+      throw new Error("Can not delete non-existent pending authentication.");
+    }
+
+    // removing pending
+    delete this.pending[token];
+  };
 }

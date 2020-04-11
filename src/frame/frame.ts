@@ -6,8 +6,6 @@ import to from "await-to-js";
 import * as crs from "crypto-random-string";
 import { Request, Response } from "express";
 import * as passport from "passport";
-import conf from "../managed/configs";
-conf(passport);
 
 export class Frame {
   constructor() {
@@ -67,9 +65,10 @@ export class Frame {
     // Managed PassportJS strategies
     if (this.managedStrategies.includes(strategy)) {
       // attaching redirection url to session
-      req.session.redirect = redirect_uri;
 
       console.log(`Using managed strategy... (${strategy})`);
+
+      req.session.redirect_uri = redirect_uri;
       passport.authenticate(
         strategy,
         config.strategies[strategy]?.params ?? {}
@@ -140,7 +139,7 @@ export class Frame {
     passport.authenticate(req.params.strategy)(req, res, next);
   };
 
-  finalizeManaged = (req, res) => {
+  finalizeManaged(req, res) {
     // Strategy did not handle the identity data, so we only add the identifier as data.
 
     let code = crs({ length: 20, type: "numeric" });
@@ -153,6 +152,6 @@ export class Frame {
       req.user?.data
     );
 
-    return res.redirect(`${req.session.redirect}?code=${code}`);
-  };
+    res.redirect(`${req.session.redirect_uri}?code=${code}`);
+  }
 }
