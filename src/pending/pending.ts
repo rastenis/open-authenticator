@@ -2,11 +2,10 @@ import {
   IPendingMap,
   entityError,
   authenticationModuleError,
-  IIdentities,
 } from "../interfaces";
 import { Response, Request } from "express";
 import { delay } from "../helpers/utils";
-import { PendingItem } from "./pendingItem";
+import { IPendingItem } from "./pendingItem";
 
 export class Pending {
   constructor() {}
@@ -16,7 +15,6 @@ export class Pending {
   addPending = async (
     strategy: string,
     identity: string,
-    identities: IIdentities,
     redirect: string,
     token: string,
     req: Request,
@@ -30,10 +28,9 @@ export class Pending {
     }
 
     // adding pending
-    this.pending[token] = new PendingItem(
+    this.pending[token] = new IPendingItem(
       strategy,
       identity,
-      identities,
       redirect,
       token,
       req
@@ -103,31 +100,23 @@ export class Pending {
     return this.pending[token].res;
   };
 
-  getIdentities = (token: string) => {
-    if (!this.pending[token]) {
-      throw new Error("Can not check non-existent pending authentication.");
-    }
-
-    return this.pending[token].identities;
-  };
-
-  addIdentity = (token: string, strategy: string, identityData: any) => {
-    if (!this.pending[token]) {
-      throw new Error(
-        "Can not add identity to non-existent pending authentication."
-      );
-    }
-
-    // In theory should never happen.
-    if (this.pending[token].identities[strategy]) {
-      console.warn(`WARN: Overriding old identity for ${strategy}.`);
-    }
-
-    this.pending[token].identities[strategy] = identityData;
-    return;
+  getReq = (token: string) => {
+    return this.pending[token].req;
   };
 
   splice = (s, start, delCount, newSubStr): string => {
     return s.slice(0, start) + newSubStr + s.slice(start + Math.abs(delCount));
+  };
+
+  remove = async (token: string) => {
+    if (!this.pending[token]) {
+      console.log(
+        "CRITICAL: Can not delete non-existent pending authentication."
+      );
+      throw new Error("Can not delete non-existent pending authentication.");
+    }
+
+    // removing pending
+    delete this.pending[token];
   };
 }

@@ -2,19 +2,30 @@ import {
   IFinishedMap,
   entityError,
   authenticationModuleError,
-  IIdentities,
 } from "../interfaces";
-import { FinishedItem } from "./finishedItem";
+import { IFinishedItem } from "./finishedItem";
+import moment = require("moment");
 
 export class Finished {
   constructor() {}
 
   finished: IFinishedMap = {};
 
+  /**
+   * A method to register a finished authorization
+   *
+   * @param {string} token
+   * @param {string} code
+   * @param {string} strategy
+   * @param {*} identity
+   * @param {*} data
+   */
   addFinished = async (
-    strategy: string,
+    token: string,
     code: string,
-    identityData: IIdentities
+    strategy: string,
+    identity: any,
+    data: any
   ) => {
     if (this.finished[code]) {
       console.log(
@@ -25,7 +36,13 @@ export class Finished {
     }
 
     // adding finished
-    this.finished[code] = new FinishedItem(strategy, code, identityData);
+    this.finished[code] = new IFinishedItem(
+      token,
+      code,
+      strategy,
+      identity,
+      data
+    );
   };
 
   exists = (code: string) => {
@@ -34,5 +51,22 @@ export class Finished {
 
   getFinished = (code: string) => {
     return this.finished[code];
+  };
+
+  getByToken = (token: string) => {
+    return (
+      token &&
+      Object.values(this.finished).find((f) => {
+        // checking expirations along the way
+        this.checkPurge(f);
+        return f.token === token;
+      })
+    );
+  };
+
+  checkPurge = (finished: IFinishedItem) => {
+    if (moment().isAfter(finished.expiry)) {
+      delete this.finished[finished.code];
+    }
   };
 }

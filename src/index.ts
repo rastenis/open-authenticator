@@ -7,6 +7,8 @@ import * as session from "express-session";
 import * as helmet from "helmet";
 import { router } from "./routes";
 import { Frame } from "./frame/frame";
+import * as passport from "passport";
+import conf from "./managed/configs";
 
 // app declaration
 const app = express();
@@ -34,6 +36,9 @@ app.use(
   })
 );
 app.use(bodyparser.json());
+conf(passport);
+app.use(passport.initialize());
+app.use(passport.session());
 app.set("views", path.join(__dirname, "../client/views"));
 app.set("view engine", "pug");
 
