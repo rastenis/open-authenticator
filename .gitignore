@@ -39,3 +39,6 @@ config.json
 samples.json
 
 dist
+
+data
+obj

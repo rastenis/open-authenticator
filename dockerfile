@@ -10,7 +10,7 @@ RUN apt-get update && \
     openssh-server \
     openssh-client
 
-RUN yarn add global typescript pm2
+RUN yarn global add typescript pm2
 
 RUN yarn
 
