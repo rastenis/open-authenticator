@@ -22,6 +22,7 @@ const page = ` <!DOCTYPE html>
         <a type="button" href="/loginAny">Login witth any method</a></button>
     </li>
   </ul>
+  <a href="https://github.com/Scharkee/open-authenticator/blob/master/demo.js">Click here to view the source of this demo!</p>
 
 </div>
 
