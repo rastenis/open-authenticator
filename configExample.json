@@ -1,0 +1,34 @@
+{
+  "port": 80,
+  "strategies": {
+    "sms": {
+      "token": "SMS_TOKEN"
+    },
+    "pushover": {
+      "type": "pushover",
+      "user": "PUSHOVER_USER",
+      "token": "PUSHOVER_TOKEN"
+    },
+    "google": {
+      "key": "GOOGLE_KEY",
+      "secret": "GOOGLE_SECRET",
+      "params": {
+        "scope": ["https://www.googleapis.com/auth/plus.login"]
+      }
+    },
+    "twitter": {
+      "key": "TWITTER_KEY",
+      "secret": "TWITTER_SECRET"
+    },
+    "github": {
+      "key": "GITHUB_KEY",
+      "secret": "GITHUB_SECRET"
+    }
+  },
+  "sessionSecret": "VERY_RANDOM_SECRET",
+  "url": "https://domain.com",
+  "sessionSecure": true,
+  "demoUrl": null,
+  "client_ids": ["EXAMPLE"],
+  "managed": ["google", "twitter", "github"]
+}

@@ -116,8 +116,8 @@ router.get("/finalize", async (req, res) => {
   frame.pending.confirmPending(<string>req.query.token);
   let waitingRes = frame.pending.getRes(<string>req.query.token);
 
-  // Writing out a finalization
-  waitingRes.write(`data: ${JSON.stringify({ finalized: true })} \n\n`);
+  // Sending out a finalization
+  waitingRes.send(`data: ${JSON.stringify({ finalized: true })} \n\n`);
 
   // TODO: check if can be redirected immediately.
   res.sendStatus(200);

@@ -24,7 +24,7 @@ app.use(
     cookie: {
       httpOnly: true,
       maxAge: 1000 * 60 * 15,
-      secure: false,
+      secure: config.sessionSecure ?? true,
     },
   })
 );
