@@ -98,9 +98,6 @@ router.get("/finalize", async (req, res) => {
 
   let code = crs({ length: 20, type: "numeric" });
 
-  // Removing pending
-  frame.pending.remove(<string>req.query.token);
-
   // Strategy did not handle the identity data, so we only add the identifier as data.
   frame.finished.addFinished(
     <string>req.query.token,
@@ -161,6 +158,9 @@ router.post("/verify", (req, res) => {
   }
 
   let finished = frame.finished.getFinished(req.body?.code).wrap();
+
+  // Removing pending
+  //frame.pending.remove(<string>req.query.token);
 
   return res.send(finished);
 });
