@@ -48,19 +48,23 @@ app.get("/", (req, res) => {
 
 app.get("/login", (req, res) => {
   return res.redirect(
-    `${config.url}:${config.port}/initiate?client_id=EXAMPLE&strategy=pushover&identity=matas&redirect_uri=http://localhost:3001/callback`
+    `${
+      config.url
+    }/initiate?client_id=EXAMPLE&strategy=pushover&identity=matas&redirect_uri=${
+      config.demoUrl || "http://localhost:3001"
+    }/callback`
   );
 });
 
 app.get("/loginAny", (req, res) => {
   return res.redirect(
-    `${config.url}:${config.port}/initiate?client_id=EXAMPLE&redirect_uri=http://localhost:3001/callback`
+    `${config.url}/initiate?client_id=EXAMPLE&redirect_uri=${config.demoUrl}/callback`
   );
 });
 
 app.get("/loginGoogle", (req, res) => {
   return res.redirect(
-    `${config.url}:${config.port}/initiate?client_id=EXAMPLE&strategy=google&redirect_uri=http://localhost:3001/callback`
+    `${config.url}/initiate?client_id=EXAMPLE&strategy=google&redirect_uri=${config.demoUrl}/callback`
   );
 });
 
@@ -71,7 +75,7 @@ app.get("/callback", async (req, res) => {
   }
 
   // verifying...
-  let verif = await axios.post(`${config.url}:${config.port}/verify`, {
+  let verif = await axios.post(`${config.url}/verify`, {
     code: req.query.code,
   });
 
