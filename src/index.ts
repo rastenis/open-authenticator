@@ -16,6 +16,9 @@ app.set("port", process.env.PORT || config.port || 3000);
 app.disable("view cache");
 app.use(express.static("client"));
 
+// Important when running Nginx + Https and having config.sessionSecure = true
+app.set("trust proxy", 1);
+
 app.use(
   session({
     secret: config.sessionSecret,
