@@ -45,8 +45,11 @@ export class Finished {
     );
   };
 
-  exists = (code: string) => {
-    return code && this.finished[code];
+  exists = (code: string): boolean => {
+    if (code && this.finished[code]) {
+      this.checkPurge(this.finished[code]);
+    }
+    return !!this.finished[code];
   };
 
   getFinished = (code: string) => {
