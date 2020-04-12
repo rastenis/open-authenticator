@@ -3,6 +3,6 @@ block content
     .uk-grid
         each strategy in strategies
             //-TODO: disable if already linked
-            .uk-card.uk-card-body.uk-width-1-1
-                a(href=strategy.path) #{strategy.name}
-  
+            a(href=strategy.path).uk-card.uk-card-default.uk-card-body.uk-width-1-1.uk-margin-small
+                span(uk-icon=`icon: ${strategy.name}; ratio: 2`).uk-display-inline.uk-margin-small-right
+                h3.uk-card-title.uk-display-inline #{strategy.name}

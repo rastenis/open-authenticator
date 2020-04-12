@@ -11,8 +11,17 @@ const page = ` <!DOCTYPE html>
 
 <div id="demo">
   <h2>Log in to see secret content!</h2>
-  <a type="button" href="/login">Login with Pushover</a></button>
-  <a type="button" href="/loginGoogle">Login with Google</a></button>
+  <ul>
+    <li>
+        <a type="button" href="/login">Login with Pushover</a></button>
+    </li>
+    <li>
+        <a type="button" href="/loginGoogle">Login with Google</a></button>
+    </li>
+    <li>
+        <a type="button" href="/loginAny">Login witth any method</a></button>
+    </li>
+  </ul>
 
 </div>
 
@@ -39,6 +48,12 @@ app.get("/", (req, res) => {
 app.get("/login", (req, res) => {
   return res.redirect(
     `${config.url}:${config.port}/initiate?client_id=EXAMPLE&strategy=pushover&identity=matas&redirect_uri=http://localhost:3001/callback`
+  );
+});
+
+app.get("/loginAny", (req, res) => {
+  return res.redirect(
+    `${config.url}:${config.port}/initiate?client_id=EXAMPLE&redirect_uri=http://localhost:3001/callback`
   );
 });
 

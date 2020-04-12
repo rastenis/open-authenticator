@@ -45,6 +45,12 @@ export class Finished {
     );
   };
 
+  /**
+   * Function to check whether a finishedItem exists.
+   *
+   * @param {string} code  - Verification code
+   * @returns {boolean}
+   */
   exists = (code: string): boolean => {
     if (code && this.finished[code]) {
       this.checkPurge(this.finished[code]);
@@ -56,6 +62,12 @@ export class Finished {
     return this.finished[code];
   };
 
+  /**
+   * Function to get a finishedItem by token and remove expires ones along the way.
+   *
+   * @param {string} token
+   * @returns
+   */
   getByToken = (token: string) => {
     return (
       token &&

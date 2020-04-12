@@ -80,10 +80,17 @@ export class Frame {
     if (!identity) {
       // rendering menu for all strategies that do not require an identity.
       return res.render("menu", {
-        strategies: Object.keys(strategies)
-          .filter((s) => !strategies[s].requiresIdentity)
+        strategies: config.managed
+          .concat(
+            Object.keys(strategies).filter(
+              (s) => strategies[s].requiresIdentity === false
+            )
+          )
           .map((strategyName) => {
-            name: strategyName;
+            return {
+              name: strategyName,
+              path: `/initiate?client_id=${client_id}&strategy=${strategyName}&redirect_uri=${redirect_uri}`,
+            };
           }),
       });
     }
