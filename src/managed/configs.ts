@@ -42,8 +42,8 @@ export default function (passport) {
   passport.use(
     new TwitterStrategy(
       {
-        consumerKey: config.strategies.google.key,
-        consumerSecret: config.strategies.google.secret,
+        consumerKey: config.strategies.twitter.key,
+        consumerSecret: config.strategies.twitter.secret,
         callbackURL: `${config.url}/managed/twitter`,
       },
       function (token, tokenSecret, profile, done) {
