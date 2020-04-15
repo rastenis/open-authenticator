@@ -17,22 +17,25 @@ const to = require("await-to-js").default;
     process.exit(1);
   }
 
+  console.log("Fetching available modules...");
+
+  let [errModules, modules] = await to(axios(endpoint));
+
+  if (errModules) {
+    console.error("Unexpected error while fetching modules:", errModules);
+    process.exit(1);
+  }
+
   let choices = await inquirer.prompt([
     {
       type: "checkbox",
       message: "Select modules to install:",
       name: "strategies",
-      choices: [
-        {
-          name: "Google",
-        },
-        {
-          name: "Twitter",
-        },
-        {
-          name: "Github",
-        },
-      ],
+      choices: modules.data.map((c) => {
+        return {
+          name: c.charAt(0).toUpperCase() + c.slice(1).replace(".json", ""),
+        };
+      }),
       validate: function (answer) {
         if (answer.length < 1) {
           return "You must choose at least one strategy.";
