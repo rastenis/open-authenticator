@@ -17,6 +17,15 @@ const to = require("await-to-js").default;
     process.exit(1);
   }
 
+  let [managedStrategiesError, managedStrategies] = await to(
+    fs.readFile("./src/configs/managed.ts", "utf8")
+  );
+
+  if (managedStrategiesError) {
+    console.error("Could not read managed.ts.");
+    process.exit(1);
+  }
+
   console.log("Fetching available modules...");
 
   let [errModules, modules] = await to(axios(endpoint));
@@ -24,6 +33,17 @@ const to = require("await-to-js").default;
   if (errModules) {
     console.error("Unexpected error while fetching modules:", errModules);
     process.exit(1);
+  }
+
+  modules.data = modules.data.filter((i) => {
+    return !config.managed.find((m) => {
+      return m == i.replace(".json", "");
+    });
+  });
+
+  if (modules.data.length == 0) {
+    console.log("There are no more modules available to install! Exiting...");
+    process.exit(0);
   }
 
   let choices = await inquirer.prompt([
@@ -50,7 +70,7 @@ const to = require("await-to-js").default;
 
   for (let index = 0; index < choices.strategies.length; index++) {
     const element = choices.strategies[index];
-    const spinner = ora({
+    let spinner = ora({
       text: `Fetching ${choices.strategies[index]}`,
       spinner: "triangle",
     }).start();
@@ -74,7 +94,7 @@ const to = require("await-to-js").default;
       return s.install;
     })
     .join(" ");
-  const spinner = ora({
+  let spinner = ora({
     text: `Installing required packages... (${toInstall})`,
     spinner: "triangle",
   }).start();
@@ -122,9 +142,28 @@ const to = require("await-to-js").default;
     ]);
 
     console.log("Injecting strategy...");
+    managedStrategies = managedStrategies.replace(
+      "// ======= MANAGED IMPORTS START =======",
+      `// ======= MANAGED IMPORTS START ======= \n // +${strat.name.toUpperCase()}  \n ${
+        strat.import
+      } \n // -${strat.name.toUpperCase()} \n`
+    );
+    managedStrategies = managedStrategies.replace(
+      "// ======= MANAGED STRATEGIES START =======",
+      `// ======= MANAGED STRATEGIES START ======= \n // +${strat.name.toUpperCase()}  \n ${
+        strat.strategy
+      } \n // -${strat.name.toUpperCase()} \n`
+    );
+
     console.log("Setting config values...");
-    config.strategies[strat.name.toLowerCase()].key = data.key;
-    config.strategies[strat.name.toLowerCase()].secret = data.secret;
+
+    let lower = strat.name.toLowerCase();
+    config.strategies[lower].key = data.key;
+    config.strategies[lower].secret = data.secret;
+    if (strat.params) {
+      config.strategies[lower].params = strat.params;
+    }
+    config.managed.push(lower);
   }
 
   console.log("Saving config...");
@@ -135,7 +174,31 @@ const to = require("await-to-js").default;
     process.exit(1);
   }
 
-  console.log("All done! Saving...");
+  console.log("Saving new strategies...");
+  let [writeStrategiesError] = await to(
+    fs.writeFile("./src/configs/managed.ts", managedStrategies)
+  );
+
+  if (writeStrategiesError) {
+    console.error("Could not write managed.ts:", writeStrategiesError);
+    process.exit(1);
+  }
+
+  spinner = ora({
+    text: `Building...`,
+    spinner: "triangle",
+  }).start();
+
+  let [buildErr] = await to(execShellCommand(`tsc`));
+
+  if (buildErr) {
+    console.error("Unexpected error while building:", buildErr);
+    process.exit(1);
+  }
+
+  spinner.stop();
+  console.log("Done!");
+
   process.exit(0);
 })();
 
