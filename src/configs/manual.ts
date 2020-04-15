@@ -1,5 +1,4 @@
 import config from "../config";
-import applyManaged from "./managed";
 
 export default function (passport) {
   passport.serializeUser(function (user, done) {
@@ -9,9 +8,6 @@ export default function (passport) {
   passport.deserializeUser(function (user, done) {
     done(null, user);
   });
-
-  // applying managed strategies
-  applyManaged(passport);
 
   //  TO ADD NEW STRATEGIES:
   //  node ./strategies.js
