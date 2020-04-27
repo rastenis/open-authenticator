@@ -108,6 +108,10 @@ const to = require("await-to-js").default;
 
   spinner.stop();
 
+  if (!config.strategies) {
+    config.strategies = {};
+  }
+
   for (let index = 0; index < choices.strategies.length; index++) {
     const strat = choices.strategies[index];
 
@@ -155,9 +159,14 @@ const to = require("await-to-js").default;
       } \n // -${strat.name.toUpperCase()} \n`
     );
 
+    let lower = strat.name.toLowerCase();
+
     console.log("Setting config values...");
 
-    let lower = strat.name.toLowerCase();
+    if (!config.strategies[lower]) {
+      config.strategies[lower] = {};
+    }
+
     config.strategies[lower].key = data.key;
     config.strategies[lower].secret = data.secret;
     if (strat.params) {
