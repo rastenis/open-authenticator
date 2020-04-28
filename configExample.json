@@ -5,7 +5,6 @@
       "token": "SMS_TOKEN"
     },
     "pushover": {
-      "type": "pushover",
       "user": "PUSHOVER_USER",
       "token": "PUSHOVER_TOKEN"
     },
