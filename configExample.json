@@ -7,11 +7,6 @@
     "pushover": {
       "user": "PUSHOVER_USER",
       "token": "PUSHOVER_TOKEN"
-    },
-    "google": {
-      "params": {
-        "scope": ["https://www.googleapis.com/auth/plus.login"]
-      }
     }
   },
   "sessionSecret": "VERY_RANDOM_SECRET",

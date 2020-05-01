@@ -119,30 +119,25 @@ const to = require("await-to-js").default;
       {
         type: "input",
         name: "config",
-        message: `${strat.name}: Go to ${strat.config} and obtain a client key and secret. Press ENTER when you're done.`,
+        message: `${strat.name}: Go to ${strat.config} and obtain ${
+          strat.customFields
+            ? strat.customFields.toString()
+            : "a client key and secret"
+        }. Press ENTER when you're done.`,
       },
-      {
-        type: "input",
-        name: "key",
-        message: `Enter the client key:`,
-        validate: function (value) {
-          if (value.length < 1) {
-            return "You must input the key.";
-          }
-          return true;
-        },
-      },
-      {
-        type: "input",
-        name: "secret",
-        message: `Enter the client secret:`,
-        validate: function (value) {
-          if (value.length < 1) {
-            return "You must input the secret.";
-          }
-          return true;
-        },
-      },
+      ...(strat.customFields || ["key", "secret"]).map((c) => {
+        return {
+          type: "input",
+          name: c,
+          message: `Enter the ${c}:`,
+          validate: function (value) {
+            if (value.length < 1) {
+              return `You must input the ${c}.`;
+            }
+            return true;
+          },
+        };
+      }),
     ]);
 
     console.log("Injecting strategy...");
@@ -167,8 +162,12 @@ const to = require("await-to-js").default;
       config.strategies[lower] = {};
     }
 
-    config.strategies[lower].key = data.key;
-    config.strategies[lower].secret = data.secret;
+    // assigning inputs
+    for (const key in data) {
+      config.strategies[lower][key] = data[key];
+    }
+
+    // custom params
     if (strat.params) {
       config.strategies[lower].params = strat.params;
     }
