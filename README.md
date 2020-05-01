@@ -1,6 +1,6 @@
-# [WIP] open-authenticator
+# open-authenticator
 
-A minimal, dockerized authentication service for easy auth management. Supports custom strategies and Passportjs strategies.
+A stateless, minimal, dockerized authentication service for easy auth management. Supports custom strategies and a wide variety of PassportJS strategies.
 
 ## Features
 
@@ -16,11 +16,12 @@ A minimal, dockerized authentication service for easy auth management. Supports 
 ## Set up
 
 ```bash
-git clone https://github.com/Scharkee/open-authenticator.git
-yarn
+$ git clone https://github.com/Scharkee/open-authenticator.git
+$ yarn
 # configure config.json using configExample.json
-# if you're running the composition, open docker-compose.yml and set the DOMAIN and CERTBOT_EMAIL variables
-docker-compose up -d
+# before running the composition, open docker-compose.yml and set the DOMAIN and CERTBOT_EMAIL variables
+
+$ docker-compose up -d
 ```
 
 ## Configuration
@@ -30,7 +31,7 @@ Configuration for strategies installed using the CLI tool are added automaticall
 Configuration for custom strategies can be added as a key/value set in config.strategies. The key is the strategy name, the value is an object of what needs to be passed to your strategy code.
 
 ```javascript
-// Pushover configuration example
+// Strategy configuration example. In this case it is for a custom strategy that requires a user and a token value, which is later used to send out confirmation notifications via Pushover.
 "pushover": {
     "user": "PUSHOVER_USER",
     "token": "PUSHOVER_TOKEN"
@@ -43,7 +44,7 @@ To run just the container, without Nginx, either for use with a reverse proxy or
 
 ```bash
 $ docker build --tag openauthenticator .
-$ docker run -p 80:80 -d openauthenticator # or port:80 for custom port
+$ docker run -p 80:80 -d openauthenticator # or yourPort:80 for custom port
 ```
 
 ## Adding custom strategy
@@ -51,17 +52,13 @@ $ docker run -p 80:80 -d openauthenticator # or port:80 for custom port
 The template for adding a custom strategy can be found in src/strategies/template.ts.
 Demos for custom strategies can be found in pushover.ts and sms.ts.
 
-## Unique multi-identity support
-
-WIP
-
-### Running independently
-
-WIP
-
 ### Mismatched URI warning for testing
 
-WIP
+When running the demo and/or testing, make sure to configure demoUrl in the config, because otherwise some providers will complain about a mismatched url.
+
+## Unique multi-identity support
+
+Multiple identities being linked and unlinked via open-authenticator are not supported since that would force the use of a database, and make stateless operation impossible. This instead can be implemented by the user, using the raw data returned from open-authenticator.
 
 ### Contribution & Support
 
