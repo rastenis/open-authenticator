@@ -14,7 +14,8 @@
     "install": "yarn build",
     "start": "node dist/index.js",
     "demo": "node demo.js",
-    "strategies": "node strategies.js",
+    "strategies": "node scripts/strategies.js",
+    "restore": "node scripts/restore.js",
     "config": "yarn strategies",
     "dev": "concurrently \"tsc -w\" \"nodemon dist/app.js\""
   },

@@ -14,5 +14,6 @@
   "sessionSecure": true,
   "demoUrl": null,
   "client_ids": ["EXAMPLE"],
-  "managed": []
+  "managed": [],
+  "showCustomStrategiesInAnyAuthMenu": true
 }

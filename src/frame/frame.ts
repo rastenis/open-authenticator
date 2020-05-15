@@ -82,9 +82,11 @@ export class Frame {
       return res.render("menu", {
         strategies: config.managed
           .concat(
-            Object.keys(strategies).filter(
-              (s) => strategies[s].requiresIdentity === false
-            )
+            config.showCustomStrategiesInAnyAuthMenu // Add custom strategies to the menu, if that is enabled in the config
+              ? Object.keys(strategies).filter(
+                  (s) => strategies[s].requiresIdentity === false
+                )
+              : []
           )
           .map((strategyName) => {
             return {
