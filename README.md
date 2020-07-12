@@ -17,7 +17,10 @@ A stateless, minimal, dockerized authentication service for easy auth management
 
 Configuration for strategies installed using the CLI tool are added automatically, according to the API key info you enter using the tool.
 
-Use `yarn run config` to run the strategy setup CLI tool.
+To run the strategy setup CLI tool:
+
+- `docker exec -it CONTAINER_NAME yarn run config` if you are using an image, or
+- `yarn run config` if you are building yourself.
 
 Configuration for custom strategies can be manually added as a key/value set in config.strategies. The key is the strategy name, the value is an object of what needs to be passed to your strategy code.
 
@@ -29,13 +32,15 @@ Configuration for custom strategies can be manually added as a key/value set in 
 }
 ```
 
-## Running standalone Docker image (just the authenticator)
+## Running by using prebuilt image (just the authenticator)
 
 To run just the container, without Nginx:
 
 ```bash
 # WIP
 ```
+
+Run `docker exec -it CONTAINER_NAME yarn run config` to perform strategy configuration.
 
 To make it reachable, you will want to either:
 
@@ -72,6 +77,13 @@ $ docker run -p 80:80 -d openauthenticator # or yourPort:80 for custom port
 You can run `yarn run config` and also perform configuration in the config/config.json file. You do not need to map that with `-v` if building locally like this.
 
 You also do not have to edit docker-compose.yml to add the domain.
+
+## Restoring configuration
+
+If you only have the config.json, you can restore the managed strategies by running:
+
+- `docker exec -it CONTAINER_NAME yarn run restore` if you are using an image, or
+- `yarn run restore` if you are building yourself.
 
 ## Adding custom strategy
 
