@@ -12,7 +12,7 @@ const to = require("await-to-js").default;
     console.error(
       "Could not read config.json. Have you set it up by copying configExample.json and modifying the values? OAuth strategy support will not work without configuring a domain."
     );
-    process.exit(1);
+    process.exit(0);
   }
 
   let [managedStrategiesError, managedStrategies] = await to(
