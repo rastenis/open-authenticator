@@ -18,7 +18,7 @@ A stateless, minimal, dockerized authentication service for easy auth management
 ```bash
 $ git clone https://github.com/Scharkee/open-authenticator.git
 $ yarn
-# configure config.json using configExample.json
+# configure config/config.json, using configExample.json
 # before running the composition, open docker-compose.yml and set the DOMAIN and CERTBOT_EMAIL variables
 
 $ docker-compose up -d

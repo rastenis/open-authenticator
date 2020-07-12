@@ -10,7 +10,8 @@
     "suppressImplicitAnyIndexErrors": true,
     "outDir": "./dist",
     "downlevelIteration": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "rootDir": "./src"
   },
   "exclude": ["node_modules", "dist"]
 }
