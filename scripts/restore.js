@@ -15,28 +15,21 @@ const to = require("await-to-js").default;
     process.exit(0);
   }
 
-  let [managedStrategiesError, managedStrategies] = await to(
-    fs.readFile("./config/managed.js", "utf8")
+  // TEMPLATE
+  console.log("Generating managed.js...");
+
+  const [managedStrategiesTemplateError, managedStrategiesTemplate] = await to(
+    fs.readFile("./scripts/template/managed.js", "utf8")
   );
 
-  // TEMPLATE
-  if (managedStrategiesError) {
-    console.log("Could not read managed.js. Generating...");
-
-    const [
-      managedStrategiesTemplateError,
-      managedStrategiesTemplate,
-    ] = await to(fs.readFile("./scripts/template/managed.js", "utf8"));
-
-    if (managedStrategiesTemplateError) {
-      console.error(
-        "Could not read template for managed.js. Unrecoverable. Reset the repo."
-      );
-      process.exit(1);
-    }
-
-    managedStrategies = managedStrategiesTemplate;
+  if (managedStrategiesTemplateError) {
+    console.error(
+      "Could not read template for managed.js. Unrecoverable. Reset the repo."
+    );
+    process.exit(1);
   }
+
+  const managedStrategies = managedStrategiesTemplate;
 
   const toInstall = [];
 
