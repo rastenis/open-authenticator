@@ -1,6 +1,6 @@
 {
   "name": "open-authenticator",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "Open Authenticator platform.",
   "main": "dist/index.js",
   "repository": "git@github.com:Scharkee/open-authenticator.git",
@@ -34,9 +34,6 @@
     "moment": "^2.24.0",
     "ora": "^4.0.3",
     "passport": "^0.4.1",
-    "passport-github2": "^0.1.12",
-    "passport-google-oauth": "^2.0.0",
-    "passport-twitter": "^1.0.4",
     "path": "^0.12.7",
     "pug": "^2.0.4",
     "pushover-notifications": "^1.2.2",

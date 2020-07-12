@@ -8,21 +8,21 @@ const ora = require("ora");
 const to = require("await-to-js").default;
 
 (async () => {
-  let [configError, config] = await to(fs.readJson("./config.json"));
+  let [configError, config] = await to(fs.readJson("./config/config.json"));
 
   if (configError) {
     console.error(
-      "Could not read config.json. Have you set it up by copying configExample.json and modifying the values? OAuth strategy support will not work without configuring a domain."
+      "Could not read config.json. Have you set it up by copying configExample.json to config/config.json and modifying the values? OAuth strategy support will not work without configuring a domain."
     );
     process.exit(1);
   }
 
   let [managedStrategiesError, managedStrategies] = await to(
-    fs.readFile("./src/configs/managed.ts", "utf8")
+    fs.readFile("./config/managed.js", "utf8")
   );
 
   if (managedStrategiesError) {
-    console.error("Could not read managed.ts.");
+    console.error("Could not read managed.js.");
     process.exit(1);
   }
 
@@ -175,7 +175,9 @@ const to = require("await-to-js").default;
   }
 
   console.log("Saving config...");
-  let [configWriteError] = await to(fs.writeJson("./config.json", config));
+  let [configWriteError] = await to(
+    fs.writeJson("./config/config.json", config)
+  );
 
   if (configWriteError) {
     console.error("Could not write config.json. ");
@@ -184,25 +186,25 @@ const to = require("await-to-js").default;
 
   console.log("Saving new strategies...");
   let [writeStrategiesError] = await to(
-    fs.writeFile("./src/configs/managed.ts", managedStrategies)
+    fs.writeFile("./config/managed.js", managedStrategies)
   );
 
   if (writeStrategiesError) {
-    console.error("Could not write managed.ts:", writeStrategiesError);
+    console.error("Could not write managed.js:", writeStrategiesError);
     process.exit(1);
   }
 
-  spinner = ora({
-    text: `Building...`,
-    spinner: "triangle",
-  }).start();
+  //   spinner = ora({
+  //     text: `Building...`,
+  //     spinner: "triangle",
+  //   }).start();
 
-  let [buildErr] = await to(execShellCommand(`tsc`));
+  //   let [buildErr] = await to(execShellCommand(`tsc`));
 
-  if (buildErr) {
-    console.error("Unexpected error while building:", buildErr);
-    process.exit(1);
-  }
+  //   if (buildErr) {
+  //     console.error("Unexpected error while building:", buildErr);
+  //     process.exit(1);
+  //   }
 
   spinner.stop();
   console.log("Done!");

@@ -35,7 +35,8 @@ jspm_packages
 .npm
 
 .env
-config.json
+
+config/
 samples.json
 
 dist

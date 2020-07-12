@@ -1,6 +1,5 @@
 import * as path from "path";
 import config from "./config";
-import { db } from "./db";
 import * as express from "express";
 import * as bodyparser from "body-parser";
 import * as session from "express-session";
@@ -9,9 +8,20 @@ import { router } from "./routes";
 import { Frame } from "./frame/frame";
 import * as passport from "passport";
 import manualConfiguration from "./configs/manual";
-import managedConfiguration from "./configs/managed";
 
-// app declaration
+// Importing managed config
+let managedConfiguration;
+try {
+  managedConfiguration = require("../config/managed.js");
+} catch (e) {
+  console.error(
+    "Managed configuration is not present in the config/ folder! Have you run the setup?",
+    e
+  );
+  process.exit(1);
+}
+
+// App declaration
 const app = express();
 app.set("port", process.env.PORT || config.port || 3000);
 app.disable("view cache");
@@ -40,6 +50,8 @@ app.use(
   })
 );
 app.use(bodyparser.json());
+
+// Setting up configurations
 manualConfiguration(passport);
 managedConfiguration(passport);
 
