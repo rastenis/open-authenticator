@@ -29,7 +29,7 @@ const to = require("await-to-js").default;
     process.exit(1);
   }
 
-  const managedStrategies = managedStrategiesTemplate,
+  let managedStrategies = managedStrategiesTemplate,
     toInstall = [];
 
   // Processing all config.managed entries
