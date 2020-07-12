@@ -14,8 +14,6 @@ RUN yarn global add typescript pm2
 
 RUN yarn
 
-RUN yarn run restore
-
 RUN tsc
-EXPOSE 3001
-CMD pm2-runtime ./dist/index.js --time
+EXPOSE 80
+CMD yarn run restore && pm2-runtime ./dist/index.js --time
