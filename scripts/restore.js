@@ -38,6 +38,8 @@ const to = require("await-to-js").default;
     managedStrategies = managedStrategiesTemplate;
   }
 
+  const toInstall = [];
+
   // Processing all config.managed entries
   for (const element of config.managed) {
     const [err, res] = await to(
@@ -65,6 +67,19 @@ const to = require("await-to-js").default;
         strat.strategy
       } \n // -${strat.name.toUpperCase()} \n`
     );
+
+    // Queing install
+    toInstall.push(strat.install);
+  }
+
+  console.log("Installing required modules...");
+  let [installErr] = await to(
+    execShellCommand(`yarn add ${toInstall.join(" ")}`)
+  );
+
+  if (installErr) {
+    console.error("Unexpected error while installing modules:", installErr);
+    process.exit(1);
   }
 
   console.log("Saving config...");
