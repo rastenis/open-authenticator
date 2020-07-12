@@ -1,4 +1,4 @@
-import config from "../config";
+const config = require("../../config/config.json");
 
 /*
  * DO NOT TOUCH THIS FILE: Strategies can be added manually in manual.ts
