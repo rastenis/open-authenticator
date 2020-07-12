@@ -1,2 +1,2 @@
-const config = require("../config");
+const config = require("../config/config");
 export default config;

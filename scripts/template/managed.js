@@ -1,4 +1,4 @@
-const config = require("../../config/config.json");
+const config = require("./config.json");
 
 /*
  * DO NOT TOUCH THIS FILE: Strategies can be added manually in manual.ts
@@ -7,7 +7,7 @@ const config = require("../../config/config.json");
 // ======= MANAGED IMPORTS START =======
 // ======= MANAGED IMPORTS END =======
 
-export default function (passport) {
+module.exports = function (passport) {
   // ======= MANAGED STRATEGIES START =======
   // ======= MANAGED STRATEGIES END =======
-}
+};

@@ -161,6 +161,13 @@ export class Frame {
       req.user?.data
     );
 
+    // WARNING: Sessions do not work consistently in non https, even with secure:false, apparently.
+    if (!req.session.redirect_uri) {
+      console.error(
+        "redirect_uri was not attached to session! Can not complete authentication!"
+      );
+    }
+
     res.redirect(`${req.session.redirect_uri}?code=${code}`);
   }
 }

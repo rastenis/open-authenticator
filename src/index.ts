@@ -1,6 +1,5 @@
 import * as path from "path";
 import config from "./config";
-import { db } from "./db";
 import * as express from "express";
 import * as bodyparser from "body-parser";
 import * as session from "express-session";
@@ -16,7 +15,8 @@ try {
   managedConfiguration = require("../config/managed.js");
 } catch (e) {
   console.error(
-    "Managed configuration is not present in the config/ folder! Have you run the setup?"
+    "Managed configuration is not present in the config/ folder! Have you run the setup?",
+    e
   );
   process.exit(1);
 }
