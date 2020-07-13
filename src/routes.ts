@@ -7,10 +7,6 @@ import * as crs from "crypto-random-string";
 
 export let router = Router();
 
-router.get("/", (req, res) => {
-  res.send("OK");
-});
-
 /**
  * /INITIATE ROUTE QUERY PARAMETERS:
  * @param {string} client_id      - Requester's client id
@@ -179,3 +175,12 @@ router.get(
     frame.finalizeManaged(req, res);
   }
 );
+
+router.get("/", (req, res) => {
+  res.send("OK");
+});
+
+// Get all active strategies
+router.get("/strategies", (req, res) => {
+  res.json(Object.keys(config.strategies));
+});
