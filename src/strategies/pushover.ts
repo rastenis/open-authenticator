@@ -3,12 +3,15 @@ import * as pending from "../pending/pending";
 import * as Push from "pushover-notifications";
 import { Request, Response } from "express";
 
-let conf = config.strategies?.pushover;
+let push,
+  conf = config.strategies?.pushover;
 
-const push = new Push({
-  user: conf.user,
-  token: conf.token,
-});
+if (conf) {
+  push = new Push({
+    user: conf.user,
+    token: conf.token,
+  });
+}
 
 export const timeout = 60;
 
