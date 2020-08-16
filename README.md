@@ -2,6 +2,8 @@
 
 A stateless, minimal, dockerized authentication service for easy auth management. Supports custom strategies and a wide variety of PassportJS strategies.
 
+![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/scharkee/open-authenticator)
+
 ## Features
 
 - Set up one OAuth flow, enable a myriad of ways to authenticate!
@@ -22,7 +24,7 @@ To run the strategy setup CLI tool:
 - `docker exec -it CONTAINER_NAME yarn run config` if you are using an image, or
 - `yarn run config` if you are building yourself.
 
-Configuration for custom strategies can be manually added as a key/value set in config.strategies. The key is the strategy name, the value is an object of what needs to be passed to your strategy code.
+Configuration for custom strategies can be manually added as a key/value set in `config.strategies`. The key is the strategy name, the value is an object of what needs to be passed to your strategy code.
 
 ```javascript
 // Strategy configuration example. In this case it is for a custom strategy that requires a user and a token value, which is later used to send out confirmation notifications via Pushover.
@@ -37,6 +39,7 @@ Configuration for custom strategies can be manually added as a key/value set in 
 To run just the container, without Nginx:
 
 ```bash
+$ docker run  -v ./local/config/path:/app/config/ -it scharkee/open-authenticator yarn run config
 # WIP
 ```
 
