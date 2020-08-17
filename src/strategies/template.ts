@@ -1,4 +1,4 @@
-import config from "../config";
+import { config } from "../config";
 import * as pending from "../pending/pending";
 import { Request, Response } from "express";
 

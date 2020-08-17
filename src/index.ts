@@ -1,5 +1,5 @@
 import * as path from "path";
-import config from "./config";
+import { config } from "./config";
 import * as express from "express";
 import * as bodyparser from "body-parser";
 import * as session from "express-session";
