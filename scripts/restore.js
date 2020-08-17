@@ -85,10 +85,15 @@ const to = require("await-to-js").default;
     toInstall.push(strat.install);
   }
 
-  console.log("Installing required modules...");
-  let [installErr] = await to(
-    execShellCommand(`yarn add ${toInstall.join(" ")}`)
-  );
+  let installErr;
+  if (toInstall.length) {
+    console.log("Installing required modules...");
+    [installErr] = await to(
+      execShellCommand(`yarn add ${toInstall.join(" ")}`)
+    );
+  } else {
+    console.log("No modules to install.");
+  }
 
   if (installErr) {
     console.error("Unexpected error while installing modules:", installErr);

@@ -39,8 +39,10 @@ Configuration for custom strategies can be manually added as a key/value set in 
 To run just the container, without Nginx:
 
 ```bash
-$ docker run  -v ./local/config/path:/app/config/ -it scharkee/open-authenticator "yarn run restore && yarn run config"
-# WIP
+# Perform configuration
+$ docker run  -v ./local/config/path:/app/config/ -it scharkee/open-authenticator yarn run setup
+# Run the authenticator
+$ docker run  -v ./local/config/path:/app/config/ -d --name "authenticator"
 ```
 
 Run `docker exec -it CONTAINER_NAME yarn run config` to perform strategy configuration.
@@ -50,6 +52,23 @@ To make it reachable, you will want to either:
 - Use with a HTTPS-enabled reverse proxy yourself, like Apache or Nginx,
 - Or run it in HTTP mode (not advised, and largely unsupported by OAuth providers) on port 80 and reach it directly.
 
+A setup for a composition using the prebuilt image would look something like this:
+
+```docker
+services:
+  authenticator:
+    container_name: authenticator
+    image: scharkee/open-authenticator
+    volumes:
+      - ./config/open-authenticator:/app/config
+    ports:
+      - "8080:80"
+  #...other services. You have to use your own https cert solution.
+
+```
+
+If you would rather use an included HTTPS cert solution, run it in composition mode:
+
 ## Set up for composition mode, or for building the container locally
 
 ```bash
@@ -58,7 +77,9 @@ $ yarn
 # configure config/config.json, using configExample.json
 ```
 
-## Running in composition mode (needs ports 80 and 443)
+## Running in composition mode
+
+(needs ports 80 and 443)
 
 This will set up Nginx with HTTPS certificates for you automatically.
 
