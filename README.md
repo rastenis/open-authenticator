@@ -39,7 +39,7 @@ Configuration for custom strategies can be manually added as a key/value set in 
 To run just the container, without Nginx:
 
 ```bash
-$ docker run  -v ./local/config/path:/app/config/ -it scharkee/open-authenticator yarn run config
+$ docker run  -v ./local/config/path:/app/config/ -it scharkee/open-authenticator "yarn run restore && yarn run config"
 # WIP
 ```
 

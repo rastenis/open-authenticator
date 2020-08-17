@@ -9,10 +9,31 @@ const to = require("await-to-js").default;
   let [configError, config] = await to(fs.readJson("./config/config.json"));
 
   if (configError) {
-    console.error(
-      "Could not read config.json. Have you set it up by copying configExample.json and modifying the values? OAuth strategy support will not work without configuring a domain."
+    console.info("Could not read config.json. Setting up defaults for you...");
+    const [configDefaultingError, configDefault] = await to(
+      fs.readJson("./configExample.js", "utf8")
     );
-    process.exit(0);
+
+    if (configDefaultingError) {
+      console.error("Could not read defaults for config.json.");
+      process.exit(1);
+    }
+
+    await fs.ensureDir("./config");
+
+    let [configWriteError] = await to(
+      fs.writeJson("./config/config.json", configDefault)
+    );
+
+    if (configWriteError) {
+      console.error("Could not write defaults to config.json.");
+      process.exit(1);
+    }
+
+    // console.error(
+    //   "Could not read config.json. Have you set it up by copying configExample.json to config/config.json and modifying the values? OAuth strategy support will not work without configuring a domain."
+    // );
+    // process.exit(1);
   }
 
   // TEMPLATE
