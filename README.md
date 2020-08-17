@@ -40,9 +40,9 @@ To run just the container, without Nginx:
 
 ```bash
 # Perform configuration
-$ docker run  -v ./local/config/path:/app/config/ -it scharkee/open-authenticator yarn run setup
+$ docker run  -v /local/config/path:/app/config/ -it scharkee/open-authenticator yarn run setup
 # Run the authenticator
-$ docker run  -v ./local/config/path:/app/config/ -d --name "authenticator"
+$ docker run  -v /local/config/path:/app/config/ -d scharkee/open-authenticator --name "authenticator"
 ```
 
 Run `docker exec -it CONTAINER_NAME yarn run config` to perform strategy configuration.
@@ -114,11 +114,23 @@ If you only have the config.json, you can restore the managed strategies by runn
 The template for adding a custom strategy can be found in src/strategies/template.ts.
 Demos for custom strategies can be found in pushover.ts and sms.ts.
 
+### Getting all available strategies
+
+You can get all configured strategies by making a GET request to /strategies
+
+Example response:
+
+```json
+["google", "twitter", "github"]
+```
+
+This is very handy for making dynamic log-ins, for example (new strategies will appear automatically once configured).
+
 ### Mismatched URI warning for testing
 
 When running the demo and/or testing, make sure to configure demoUrl in the config, because otherwise some providers will complain about a mismatched url.
 
-## Unique multi-identity support
+### Unique multi-identity support
 
 Multiple identities being linked and unlinked via open-authenticator are not supported since that would force the use of a database, and make stateless operation impossible. This instead can be implemented by the user, using the raw data returned from open-authenticator.
 
