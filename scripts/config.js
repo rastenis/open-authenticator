@@ -30,19 +30,19 @@ const to = require("await-to-js").default;
       type: "number",
       name: "port",
       default: 80,
-      message: `Input the port you would like to use [80]:`,
+      message: `Input the port you would like to use:`,
     },
     {
       type: "input",
       name: "url",
       default: "https://domain.com",
-      message: `Input the URL that will point to the authenticator [https://domain.com]:`,
+      message: `Input the URL that will point to the authenticator:`,
     },
     {
       type: "input",
       name: "ids",
       default: "EXAMPLE, EXAMPLE1",
-      message: `Input a comma-separated list of allowed client IDS [EXAMPLE, EXAMPLE1]:`,
+      message: `Input a comma-separated list of allowed client IDS:`,
     },
   ]);
 
