@@ -1,6 +1,11 @@
 {
   "port": 80,
-  "strategies": {},
+  "strategies": {
+    "pushover": {
+      "user": "PUSHOVER_USER",
+      "token": "PUSHOVER_TOKEN"
+    }
+  },
   "sessionSecret": "VERY_RANDOM_SECRET",
   "url": "https://domain.com",
   "sessionSecure": true,

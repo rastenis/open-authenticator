@@ -11,9 +11,7 @@ const to = require("await-to-js").default;
   let [configError, config] = await to(fs.readJson("./config/config.json"));
 
   if (configError) {
-    console.error(
-      "Could not read config.json. You can either: do `yarn run restore` or set it up by copying configExample.json to config/config.json and modifying the values. OAuth strategy support will not work without configuring a domain."
-    );
+    console.error("Could not read config.json. You can either:");
     console.error("1. Run `yarn run restore` or,");
     console.error(
       "2. Set it up by copying configExample.json to config/config.json and modifying the values. "
@@ -27,8 +25,23 @@ const to = require("await-to-js").default;
   );
 
   if (managedStrategiesError) {
-    console.error("Could not read managed.js.");
-    process.exit(1);
+    console.error("Could not read managed.js. Writing defaults...");
+
+    const [
+      managedStrategiesTemplateError,
+      managedStrategiesTemplate,
+    ] = await to(fs.readFile("./scripts/template/managed.js", "utf8"));
+
+    if (managedStrategiesTemplateError) {
+      console.error(
+        "Could not read template for managed.js. Unrecoverable. Reset the repo."
+      );
+      process.exit(1);
+    }
+
+    const [writeStrategiesError] = await to(
+      fs.writeFile("./config/managed.js", managedStrategiesTemplate)
+    );
   }
 
   console.log("Fetching available modules...");
@@ -159,24 +172,24 @@ const to = require("await-to-js").default;
       } \n // -${strat.name.toUpperCase()} \n`
     );
 
-    let lower = strat.name.toLowerCase();
+    let lowerCaseStrategyName = strat.name.toLowerCase();
 
     console.log("Setting config values...");
 
-    if (!config.strategies[lower]) {
-      config.strategies[lower] = {};
+    if (!config.strategies[lowerCaseStrategyName]) {
+      config.strategies[lowerCaseStrategyName] = {};
     }
 
     // assigning inputs
     for (const key in data) {
-      config.strategies[lower][key] = data[key];
+      config.strategies[lowerCaseStrategyName][key] = data[key];
     }
 
     // custom params
     if (strat.params) {
-      config.strategies[lower].params = strat.params;
+      config.strategies[lowerCaseStrategyName].params = strat.params;
     }
-    config.managed.push(lower);
+    config.managed.push(lowerCaseStrategyName);
   }
 
   console.log("Saving config...");
