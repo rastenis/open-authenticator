@@ -3,7 +3,7 @@ import {
   entityError,
   authenticationModuleError,
 } from "../interfaces";
-import { IFinishedItem } from "./finishedItem";
+import { IFinishedItem } from "./FinishedItem";
 import moment = require("moment");
 
 export class Finished {
