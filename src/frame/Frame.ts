@@ -48,7 +48,7 @@ export class Frame {
     );
 
     // Checking client_id
-    if (!config.client_ids?.includes(client_id)) {
+    if (!config.clients?.includes(client_id)) {
       return res.status(500).send("Unregistered client_id!");
     }
 

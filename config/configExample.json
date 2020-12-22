@@ -1,19 +1,11 @@
 {
   "port": 80,
-  "strategies": {
-    "sms": {
-      "token": "SMS_TOKEN"
-    },
-    "pushover": {
-      "user": "PUSHOVER_USER",
-      "token": "PUSHOVER_TOKEN"
-    }
-  },
+  "strategies": {},
   "sessionSecret": "VERY_RANDOM_SECRET",
   "url": "https://domain.com",
   "sessionSecure": true,
   "demoUrl": null,
-  "client_ids": ["EXAMPLE"],
+  "clients": ["EXAMPLE"],
   "managed": [],
   "showCustomStrategiesInAnyAuthMenu": true
 }

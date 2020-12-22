@@ -17,7 +17,7 @@
     "demo": "node demo.js",
     "strategies": "node scripts/strategies.js",
     "restore": "node scripts/restore.js",
-    "config": "yarn strategies",
+    "config": "node scripts/configuration.js",
     "dev": "concurrently \"tsc -w\" \"nodemon dist/app.js\""
   },
   "dependencies": {
