@@ -12,7 +12,11 @@ const to = require("await-to-js").default;
 
   if (configError) {
     console.error(
-      "Could not read config.json. Have you set it up by copying configExample.json to config/config.json and modifying the values? OAuth strategy support will not work without configuring a domain."
+      `Could not read config.json. Have you run the setup? You can do that via: ${chalk.cyan.bold(
+        "yarn run config"
+      )} or '${chalk.cyan.bold(
+        "docker exec -it CONTAINER_NAME yarn run config"
+      )}' if you are running a standalone container or as part of a composition.`
     );
     process.exit(1);
   }
@@ -22,7 +26,14 @@ const to = require("await-to-js").default;
   );
 
   if (managedStrategiesError) {
-    console.error("Could not read managed.js.");
+    console.error("Could not read managed.js. Using template...");
+    [managedStrategiesError, managedStrategies] = await to(
+      fs.readFile("./scripts/template/managed.js", "utf8")
+    );
+  }
+
+  if (managedStrategiesError) {
+    console.error("Could not read managed.js template.");
     process.exit(1);
   }
 

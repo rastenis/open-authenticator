@@ -43,3 +43,5 @@ dist
 
 data
 obj
+
+config/managed.js

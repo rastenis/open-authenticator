@@ -2,7 +2,7 @@
 const fs = require("fs-extra");
 const inquirer = require("inquirer");
 const to = require("await-to-js").default;
-const util = require("util");
+const chalk = require("chalk");
 
 (async () => {
   let [configError, config] = await to(
@@ -65,11 +65,7 @@ const util = require("util");
 
   console.log("Writing config...");
   await fs.writeJSON("./config/config.json", config);
-  console.log("Done!");
-
-  if (prompt.doStrategySetup) {
-    require("./strategies");
-  } else {
-    process.exit(0);
-  }
+  console.log(
+    `Done! Run ${chalk.cyan.bold("yarn run strategies")} to set up strategies.`
+  );
 })();
