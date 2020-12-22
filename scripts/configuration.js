@@ -65,7 +65,16 @@ const chalk = require("chalk");
 
   console.log("Writing config...");
   await fs.writeJSON("./config/config.json", config);
-  console.log(
-    `Done! Run ${chalk.cyan.bold("yarn run strategies")} to set up strategies.`
-  );
+
+  if (prompt.doStrategySetup) {
+    console.log("Done! Launching strategy setup:\n\n");
+    require("./strategies");
+  } else {
+    console.log(
+      `Done! Run ${chalk.cyan.bold(
+        "yarn run strategies"
+      )} if you want help with setting up strategies.`
+    );
+    process.exit(0);
+  }
 })();
