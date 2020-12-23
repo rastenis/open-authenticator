@@ -17,12 +17,17 @@ A stateless, minimal, dockerized authentication service for easy auth management
 
 Configuration for strategies installed using the CLI tool are added automatically, according to the API key info you enter using the tool.
 
-To run the strategy setup CLI tool:
+To run the configuration setup CLI tool:
 
 - `docker exec -it CONTAINER_NAME yarn run config` if you are using an image, or
 - `yarn run config` if you are building yourself.
 
-Configuration for custom strategies can be manually added as a key/value set in config.strategies. The key is the strategy name, the value is an object of what needs to be passed to your strategy code.
+To run the guided strategy setup CLI tool (you can opt in to run this when running `yarn run config`):
+
+- `docker exec -it CONTAINER_NAME yarn run strategies` if you are using an image, or
+- `yarn run strategies` if you are building yourself.
+
+Configuration for custom strategies can also be manually added as a key/value set in config.strategies. The key is the strategy name, the value is an object of what needs to be passed to your strategy code.
 
 ```javascript
 // Strategy configuration example. In this case it is for a custom strategy that requires a user and a token value, which is later used to send out confirmation notifications via Pushover.
@@ -37,17 +42,17 @@ Configuration for custom strategies can be manually added as a key/value set in 
 To run just the container, without Nginx:
 
 ```bash
-# WIP
+sudo docker run -d -p 80:80 -v /absolute/path/to/your/config:/app/config scharkee/open-authenticator --name="CONTAINER_NAME"
 ```
 
-Run `docker exec -it CONTAINER_NAME yarn run config` to perform strategy configuration.
+Run `docker exec -it CONTAINER_NAME yarn run config` to perform configuration. It will persist in your local config folder for next launch.
 
 To make it reachable, you will want to either:
 
 - Use with a HTTPS-enabled reverse proxy yourself, like Apache or Nginx,
 - Or run it in HTTP mode (not advised, and largely unsupported by OAuth providers) on port 80 and reach it directly.
 
-## Set up for composition mode, or for building the container locally
+## Set up for composition mode OR for building the container locally
 
 ```bash
 $ git clone https://github.com/Scharkee/open-authenticator.git
@@ -65,7 +70,13 @@ Before running the composition, open docker-compose.yml and set the `DOMAIN` and
 $ docker-compose up -d
 ```
 
-## Running locally built Docker container (just the authenticator)
+### Running outside of container, or running locally built Docker container (just the authenticator)
+
+To run without the container, for developing custom strategies or testing:
+
+```bash
+$ yarn launch # this is production more. Run 'yarn dev' if you want hot reload. yarn
+```
 
 To build the container locally, without Nginx, either for use with a reverse proxy or for running in HTTP mode (not advised), run:
 
@@ -78,14 +89,14 @@ You can run `yarn run config` and also perform configuration in the config/confi
 
 You also do not have to edit docker-compose.yml to add the domain.
 
-## Restoring configuration
+### Restoring configuration
 
 If you only have the config.json, you can restore the managed strategies by running:
 
 - `docker exec -it CONTAINER_NAME yarn run restore` if you are using an image, or
 - `yarn run restore` if you are building yourself.
 
-## Adding custom strategy
+### Adding custom strategy
 
 The template for adding a custom strategy can be found in src/strategies/template.ts.
 Demos for custom strategies can be found in pushover.ts and sms.ts.
