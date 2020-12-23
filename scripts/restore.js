@@ -15,6 +15,11 @@ const to = require("await-to-js").default;
     process.exit(0);
   }
 
+  if (!config?.managed?.length) {
+    console.log("Nothing to restore.");
+    process.exit(0);
+  }
+
   // TEMPLATE
   console.log("Generating managed.js...");
 

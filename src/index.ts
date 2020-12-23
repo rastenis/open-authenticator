@@ -17,7 +17,7 @@ try {
 } catch (e) {
   console.error(
     chalk.red("Managed configuration is not present in the config folder!") +
-      `Have you run the setup? You can do that via: ${chalk.cyan.bold(
+      ` Have you run the setup? You can do that via: ${chalk.cyan.bold(
         "yarn run config"
       )} or '${chalk.cyan.bold(
         "docker exec -it CONTAINER_NAME yarn run config"

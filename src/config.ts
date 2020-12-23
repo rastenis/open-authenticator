@@ -7,7 +7,7 @@ try {
 } catch {
   console.error(
     chalk.red("config.json not present!") +
-      `Have you run the setup? You can do that via: ${chalk.cyan.bold(
+      ` Have you run the setup? You can do that via: ${chalk.cyan.bold(
         "yarn run config"
       )} or '${chalk.cyan.bold(
         "docker exec -it CONTAINER_NAME yarn run config"

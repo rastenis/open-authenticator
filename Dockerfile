@@ -1,14 +1,8 @@
 
-FROM node:10-slim
+FROM node:15-slim
 RUN mkdir -p /app
 COPY . /app
 WORKDIR /app/
-
-RUN apt-get update && \
-    apt-get install -y \
-    git \
-    openssh-server \
-    openssh-client
 
 RUN yarn global add typescript pm2
 
