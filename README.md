@@ -54,10 +54,12 @@ To make it reachable, you will want to either:
 
 ## Set up for composition mode OR for building the container locally
 
+Pull the repo:
+
 ```bash
 $ git clone https://github.com/Scharkee/open-authenticator.git
 $ yarn
-# configure config/config.json, using configExample.json
+# run configuration (yarn run config).
 ```
 
 ## Running in composition mode (needs ports 80 and 443)
@@ -70,12 +72,14 @@ Before running the composition, open docker-compose.yml and set the `DOMAIN` and
 $ docker-compose up -d
 ```
 
+After configuring and running, you should be able to access open-authenticator at https://DOMAIN, if you have got your DNS correctly set.
+
 ### Running outside of container, or running locally built Docker container (just the authenticator)
 
 To run without the container, for developing custom strategies or testing:
 
 ```bash
-$ yarn launch # this is production more. Run 'yarn dev' if you want hot reload. yarn
+$ yarn launch # this is for production mode. Run 'yarn dev' if you want hot reload.
 ```
 
 To build the container locally, without Nginx, either for use with a reverse proxy or for running in HTTP mode (not advised), run:
