@@ -36,10 +36,12 @@ jspm_packages
 
 .env
 
-config/
+config.json
 samples.json
 
 dist
 
 data
 obj
+
+config/managed.js

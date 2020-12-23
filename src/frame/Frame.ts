@@ -1,5 +1,5 @@
 import { Pending } from "../pending/pending";
-import { Finished } from "../finished/finished";
+import { Finished } from "../finished/Finished";
 import config from "../config";
 import * as strategies from "../strategies";
 import to from "await-to-js";
@@ -48,7 +48,7 @@ export class Frame {
     );
 
     // Checking client_id
-    if (!config.client_ids?.includes(client_id)) {
+    if (!config.clients?.includes(client_id)) {
       return res.status(500).send("Unregistered client_id!");
     }
 

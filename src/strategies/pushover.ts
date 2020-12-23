@@ -1,7 +1,15 @@
 import config from "../config";
-import * as pending from "../pending/pending";
 import * as Push from "pushover-notifications";
 import { Request, Response } from "express";
+
+// This is an example of what a custom strategy might look like for open-authenticator.
+// Pushover delivers notifications, so the initialization action is just sending the finalization link.
+
+// This is what you would put in config.strategies for Pushover to work::
+// "pushover": {
+//   "user": "PUSHOVER_USER",
+//   "token": "PUSHOVER_TOKEN",
+// }
 
 let push,
   conf = config.strategies?.pushover;
