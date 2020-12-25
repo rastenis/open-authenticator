@@ -6,12 +6,12 @@ const chalk = require("chalk");
 
 (async () => {
   let [configError, config] = await to(
-    fs.readJson("./config/configExample.json")
+    fs.readJson("./scripts/template/configTemplate.json")
   );
 
   if (configError) {
     console.error(
-      "Could not read template configuration. It should be present in config/configExample.json."
+      "Could not read template configuration. It should be present in scripts/template/configTemplate.json."
     );
     process.exit(0);
   }

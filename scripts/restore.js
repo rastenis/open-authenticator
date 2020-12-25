@@ -10,7 +10,7 @@ const to = require("await-to-js").default;
 
   if (configError) {
     console.error(
-      "Could not read config.json. Have you set it up by copying configExample.json and modifying the values? OAuth strategy support will not work without configuring a domain."
+      "Could not read config.json. You can set it up by running 'yarn run config' or by copying scripts/template/configTemplate.json and modifying the values? OAuth strategy support will not work without configuring a domain."
     );
     process.exit(0);
   }
