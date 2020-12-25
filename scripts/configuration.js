@@ -63,6 +63,10 @@ const chalk = require("chalk");
   config.showCustomStrategiesInAnyAuthMenu =
     prompt.showCustomStrategiesInAnyAuthMenu;
 
+  config.sessionSecret = [...Array(30)]
+    .map((i) => (~~(Math.random() * 36)).toString(36))
+    .join("");
+
   console.log("Writing config...");
   await fs.writeJSON("./config/config.json", config);
 
