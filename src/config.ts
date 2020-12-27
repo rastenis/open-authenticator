@@ -8,9 +8,9 @@ try {
   console.error(
     chalk.red("config.json not present!") +
       ` Have you run the setup? You can do that via: ${chalk.cyan.bold(
-        "yarn run setup"
+        "yarn setup"
       )} or '${chalk.cyan.bold(
-        "docker exec -it CONTAINER_NAME yarn run setup"
+        "docker exec -it CONTAINER_NAME yarn setup"
       )}' if you are running a standalone container or as part of a composition.`
   );
 }

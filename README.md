@@ -9,11 +9,18 @@ A stateless, minimal, dockerized authentication service for easy auth management
 - Set up one OAuth flow, enable a myriad of ways to authenticate!
 - Demo page with multiple auth choices
 - Enable strategies:
-  - Easily add supoprted PassportJS methods via guided CLI tool
+
+  - Easily add supported OAuth strategies via guided CLI tool
   - Define custom strategies yourself. Examples for SMS and Pushover included
+
+- Multiple ways to run:
+
+  - Run the provided composition
+  - Include it in your own Docker composition
+  - Run as a standalone container
+
 - Upon authentication, your application receives the identifier and profile data in a standardized format
-- Run as a standalone container or include it in your Docker composition
-- Automatic TLS certificate generation if running standalone (requires ports 443 and 80)
+- Automatic TLS certificate generation if running in composition mode (requires ports 443 and 80)
 
 ## Configuration
 
@@ -21,8 +28,8 @@ Configuration for strategies installed using the CLI tool are added automaticall
 
 To run the configuration setup CLI tool + the strategy configuration:
 
-- `docker exec -it CONTAINER_NAME yarn run setup` if you are using an image, or
-- `yarn run setup` if you are building yourself, or running outside of the container.
+- `docker exec -it CONTAINER_NAME yarn setup` if you are using an image, or
+- `yarn setup` if you are building yourself, or running outside of the container.
 
 Configuration for custom strategies can also be manually added as a key/value set in config.strategies. The key is the strategy name, the value is an object of what needs to be passed to your strategy code.
 
@@ -42,7 +49,7 @@ To run just the container, without Nginx:
 
 ```bash
 # Perform configuration. This will be persisted locally.
-$ docker run -v /absolute/path/to/your/config:/app/config/ -it scharkee/open-authenticator yarn run setup
+$ docker run -v /absolute/path/to/your/config:/app/config/ -it scharkee/open-authenticator yarn setup
 
 # Run the authenticator
 $ docker run -d -p 80:80 -v /absolute/path/to/your/config:/app/config/ scharkee/open-authenticator --name="CONTAINER_NAME"
@@ -92,8 +99,6 @@ $ yarn setup
 
 This will set up Nginx with HTTPS certificates for you automatically.
 
-Before running the composition, open docker-compose.yml and set the `DOMAIN` and `CERTBOT_EMAIL` variables.
-
 ```bash
 $ docker-compose up -d
 ```
@@ -112,12 +117,11 @@ To build the container locally, without Nginx, either for use with a reverse pro
 
 ```bash
 $ docker build --tag openauthenticator .
+
 $ docker run -p 80:80 -d openauthenticator # or yourPort:80 for custom port
 ```
 
-You can run `yarn run config` and also perform configuration in the config/config.json file. You do not need to map that with `-v` if building locally like this.
-
-You also do not have to edit docker-compose.yml to add the domain.
+You can run `yarn setup` before building. You do not need to map the config folder with `-v` if building locally like this, since it will be included when building the container.
 
 ### Restoring configuration
 
@@ -125,6 +129,8 @@ If you only have the config.json, you can restore the managed strategies by runn
 
 - `docker exec -it CONTAINER_NAME yarn run restore` if you are using an image, or
 - `yarn run restore` if you are building yourself.
+
+This is done every startup automatically, by the container itself.
 
 ### Adding custom strategy
 

@@ -4,6 +4,7 @@ const endpoint = "https://api.mtr.lt/openauthenticator/";
 const axios = require("axios");
 const fs = require("fs-extra");
 const ora = require("ora");
+const chalk = require("chalk");
 
 const to = require("await-to-js").default;
 
@@ -11,13 +12,11 @@ const to = require("await-to-js").default;
   let [configError, config] = await to(fs.readJson("./config/config.json"));
 
   if (configError) {
-    console.error("Could not read config.json. You can either:");
-    console.error("1. Run `yarn run restore` or,");
     console.error(
       `Could not read config.json. Have you run the setup? You can do that via: ${chalk.cyan.bold(
-        "yarn run config"
+        "yarn setup"
       )} or '${chalk.cyan.bold(
-        "docker exec -it CONTAINER_NAME yarn run config"
+        "docker exec -it CONTAINER_NAME yarn setup"
       )}' if you are running a standalone container or as part of a composition.`
     );
 
@@ -177,9 +176,15 @@ const to = require("await-to-js").default;
     }
 
     // assigning inputs
-    for (const key in data) {
-      config.strategies[lowerCaseStrategyName][key] = data[key];
-    }
+    config.strategies[lowerCaseStrategyName] = {
+      ...config.strategies[lowerCaseStrategyName],
+      ...data,
+    };
+
+    // configuration url cleanup
+    try {
+      delete config.strategies[lowerCaseStrategyName].config;
+    } catch {}
 
     // custom params
     if (strat.params) {

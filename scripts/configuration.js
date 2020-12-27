@@ -3,6 +3,7 @@ const fs = require("fs-extra");
 const inquirer = require("inquirer");
 const to = require("await-to-js").default;
 const chalk = require("chalk");
+const exec = require("child_process").exec;
 
 (async () => {
   let [configError, config] = await to(fs.readJson("./config/config.json"));
@@ -47,7 +48,7 @@ const chalk = require("chalk");
     {
       type: "confirm",
       message: `Would you like to display custom strategies in the 'any' auth method menu?`,
-      default: showCustomStrategiesInAnyAuthMenu,
+      default: config.showCustomStrategiesInAnyAuthMenu,
       name: "showCustomStrategiesInAnyAuthMenu",
     },
     {
@@ -70,7 +71,7 @@ const chalk = require("chalk");
     `sed -i "s/CERTBOT_EMAIL:.*/CERTBOT_EMAIL: ${prompt.letsencryptEmail}/g" ./docker-compose.yml`
   );
 
-  if (data.url.includes("https://")) {
+  if (prompt.url.includes("https://")) {
     console.log(
       "Using secure sessions because you are using a HTTPS endpoint."
     );

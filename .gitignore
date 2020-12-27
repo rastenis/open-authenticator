@@ -45,3 +45,5 @@ data
 obj
 
 config/managed.js
+
+docker-compose.yml
