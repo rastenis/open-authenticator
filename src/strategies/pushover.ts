@@ -1,4 +1,4 @@
-import config from "../config";
+import { config } from "../config";
 import * as Push from "pushover-notifications";
 import { Request, Response } from "express";
 

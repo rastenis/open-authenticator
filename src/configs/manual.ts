@@ -1,4 +1,4 @@
-import config from "../config";
+import { config } from "../config";
 
 export default function (passport) {
   passport.serializeUser(function (user, done) {

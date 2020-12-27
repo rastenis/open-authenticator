@@ -11,13 +11,14 @@
     "test": "jest",
     "tsc": "tsc",
     "build": "tsc",
-    "install": "yarn build",
+    "install": "yarn run build",
     "start": "node dist/index.js",
     "launch": "yarn build && yarn start",
     "demo": "node demo.js",
     "strategies": "node scripts/strategies.js",
     "restore": "node scripts/restore.js",
     "config": "node scripts/configuration.js",
+    "setup": "yarn run config && yarn run strategies",
     "dev": "concurrently \"tsc -w\" \"nodemon dist/app.js\""
   },
   "dependencies": {

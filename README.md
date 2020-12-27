@@ -2,6 +2,8 @@
 
 A stateless, minimal, dockerized authentication service for easy auth management. Supports custom strategies and a wide variety of PassportJS strategies.
 
+![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/scharkee/open-authenticator)
+
 ## Features
 
 - Set up one OAuth flow, enable a myriad of ways to authenticate!
@@ -17,17 +19,14 @@ A stateless, minimal, dockerized authentication service for easy auth management
 
 Configuration for strategies installed using the CLI tool are added automatically, according to the API key info you enter using the tool.
 
-To run the configuration setup CLI tool:
+To run the configuration setup CLI tool + the strategy configuration:
 
-- `docker exec -it CONTAINER_NAME yarn run config` if you are using an image, or
-- `yarn run config` if you are building yourself.
-
-To run the guided strategy setup CLI tool (you can opt in to run this when running `yarn run config`):
-
-- `docker exec -it CONTAINER_NAME yarn run strategies` if you are using an image, or
-- `yarn run strategies` if you are building yourself.
+- `docker exec -it CONTAINER_NAME yarn run setup` if you are using an image, or
+- `yarn run setup` if you are building yourself, or running outside of the container.
 
 Configuration for custom strategies can also be manually added as a key/value set in config.strategies. The key is the strategy name, the value is an object of what needs to be passed to your strategy code.
+
+If you want to only change the config, run `yarn run config`. To only modify strategies, run `yarn run strategies`.
 
 ```javascript
 // Strategy configuration example. In this case it is for a custom strategy that requires a user and a token value, which is later used to send out confirmation notifications via Pushover.
@@ -42,27 +41,54 @@ Configuration for custom strategies can also be manually added as a key/value se
 To run just the container, without Nginx:
 
 ```bash
-sudo docker run -d -p 80:80 -v /absolute/path/to/your/config:/app/config scharkee/open-authenticator --name="CONTAINER_NAME"
+# Perform configuration. This will be persisted locally.
+$ docker run -v /absolute/path/to/your/config:/app/config/ -it scharkee/open-authenticator yarn run setup
+
+# Run the authenticator
+$ docker run -d -p 80:80 -v /absolute/path/to/your/config:/app/config/ scharkee/open-authenticator --name="CONTAINER_NAME"
 ```
 
-Run `docker exec -it CONTAINER_NAME yarn run config` to perform configuration. It will persist in your local config folder for next launch.
+Run `docker exec -it CONTAINER_NAME yarn run strategies` when you want to adjust your strategy configurations. It will persist in your local config folder for next launch.
 
 To make it reachable, you will want to either:
 
 - Use with a HTTPS-enabled reverse proxy yourself, like Apache or Nginx,
 - Or run it in HTTP mode (not advised, and largely unsupported by OAuth providers) on port 80 and reach it directly.
 
-## Set up for composition mode OR for building the container locally
+A setup for a composition using the prebuilt image would look something like this:
 
-Pull the repo:
+```docker
+services:
+  authenticator:
+    container_name: authenticator
+    image: scharkee/open-authenticator
+    volumes:
+      - ./config/open-authenticator:/app/config
+    ports:
+      - "8080:80"
+  #...other services. You have to use your own https cert solution.
 
-```bash
-$ git clone https://github.com/Scharkee/open-authenticator.git
-$ yarn
-# run configuration (yarn run config).
 ```
 
-## Running in composition mode (needs ports 80 and 443)
+If you would rather use an included HTTPS cert solution, run it in composition mode:
+
+## Set up for composition mode, or for building the container locally
+
+```bash
+# clone the repo
+$ git clone https://github.com/Scharkee/open-authenticator.git
+$ cd open-authenticator
+
+# install dependencies
+$ yarn
+
+# run configuration
+$ yarn setup
+```
+
+## Running in composition mode
+
+(needs ports 80 and 443)
 
 This will set up Nginx with HTTPS certificates for you automatically.
 
@@ -105,11 +131,23 @@ If you only have the config.json, you can restore the managed strategies by runn
 The template for adding a custom strategy can be found in src/strategies/template.ts.
 Demos for custom strategies can be found in pushover.ts and sms.ts.
 
+### Getting all available strategies
+
+You can get all configured strategies by making a GET request to /strategies
+
+Example response:
+
+```json
+["google", "twitter", "github"]
+```
+
+This is very handy for making dynamic log-ins, for example (new strategies will appear automatically once configured).
+
 ### Mismatched URI warning for testing
 
 When running the demo and/or testing, make sure to configure demoUrl in the config, because otherwise some providers will complain about a mismatched url.
 
-## Unique multi-identity support
+### Unique multi-identity support
 
 Multiple identities being linked and unlinked via open-authenticator are not supported since that would force the use of a database, and make stateless operation impossible. This instead can be implemented by the user, using the raw data returned from open-authenticator.
 

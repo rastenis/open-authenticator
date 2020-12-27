@@ -1,6 +1,6 @@
 import { Pending } from "../pending/pending";
 import { Finished } from "../finished/Finished";
-import config from "../config";
+import { config } from "../config";
 import * as strategies from "../strategies";
 import to from "await-to-js";
 import * as crs from "crypto-random-string";

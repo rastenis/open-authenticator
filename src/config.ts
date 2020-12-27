@@ -1,6 +1,6 @@
 import chalk = require("chalk");
 
-let config = {} as any;
+export let config = {} as any;
 
 try {
   config = require("../config/config");
@@ -8,11 +8,9 @@ try {
   console.error(
     chalk.red("config.json not present!") +
       ` Have you run the setup? You can do that via: ${chalk.cyan.bold(
-        "yarn run config"
+        "yarn run setup"
       )} or '${chalk.cyan.bold(
-        "docker exec -it CONTAINER_NAME yarn run config"
+        "docker exec -it CONTAINER_NAME yarn run setup"
       )}' if you are running a standalone container or as part of a composition.`
   );
 }
-
-export default config;

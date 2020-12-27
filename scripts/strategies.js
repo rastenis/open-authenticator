@@ -11,6 +11,8 @@ const to = require("await-to-js").default;
   let [configError, config] = await to(fs.readJson("./config/config.json"));
 
   if (configError) {
+    console.error("Could not read config.json. You can either:");
+    console.error("1. Run `yarn run restore` or,");
     console.error(
       `Could not read config.json. Have you run the setup? You can do that via: ${chalk.cyan.bold(
         "yarn run config"
@@ -18,7 +20,8 @@ const to = require("await-to-js").default;
         "docker exec -it CONTAINER_NAME yarn run config"
       )}' if you are running a standalone container or as part of a composition.`
     );
-    process.exit(1);
+
+    process.exit(0);
   }
 
   let [managedStrategiesError, managedStrategies] = await to(
@@ -165,24 +168,24 @@ const to = require("await-to-js").default;
       } \n // -${strat.name.toUpperCase()} \n`
     );
 
-    let lower = strat.name.toLowerCase();
+    let lowerCaseStrategyName = strat.name.toLowerCase();
 
     console.log("Setting config values...");
 
-    if (!config.strategies[lower]) {
-      config.strategies[lower] = {};
+    if (!config.strategies[lowerCaseStrategyName]) {
+      config.strategies[lowerCaseStrategyName] = {};
     }
 
     // assigning inputs
     for (const key in data) {
-      config.strategies[lower][key] = data[key];
+      config.strategies[lowerCaseStrategyName][key] = data[key];
     }
 
     // custom params
     if (strat.params) {
-      config.strategies[lower].params = strat.params;
+      config.strategies[lowerCaseStrategyName].params = strat.params;
     }
-    config.managed.push(lower);
+    config.managed.push(lowerCaseStrategyName);
   }
 
   console.log("Saving config...");
