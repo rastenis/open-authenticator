@@ -6,6 +6,7 @@ import to from "await-to-js";
 import * as crs from "crypto-random-string";
 import { Request, Response } from "express";
 import * as passport from "passport";
+import { passportAliases } from "../constants/passportAliases";
 
 export class Frame {
   constructor() {
@@ -70,7 +71,7 @@ export class Frame {
 
       req.session.redirect_uri = redirect_uri;
       passport.authenticate(
-        strategy,
+        passportAliases[strategy] ?? strategy,
         config.strategies[strategy]?.params ?? {}
       )(req, res, next);
       return;

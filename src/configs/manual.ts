@@ -10,7 +10,7 @@ export default function (passport) {
   });
 
   //  TO ADD NEW STRATEGIES:
-  //  node ./strategies.js
+  //  yarn run strategies
 
   //  TO ADD NEW STRATEGY MANUALLY:
   //   passport.use(
