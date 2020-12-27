@@ -146,7 +146,9 @@ export class Frame {
   };
 
   finalizeManagedProxy = (req, res, next) => {
-    passport.authenticate(req.params.strategy)(req, res, next);
+    passport.authenticate(
+      passportAliases[req.params.strategy] ?? req.params.strategy
+    )(req, res, next);
   };
 
   finalizeManaged(req, res) {
