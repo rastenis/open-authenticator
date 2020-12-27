@@ -86,7 +86,7 @@ const exec = require("child_process").exec;
   config.port = prompt.port;
   config.sessionSecure = prompt.sessionSecure;
   config.url = prompt.url;
-  config.clients = config.client_ids = prompt.clients.split(",").map((e) => {
+  config.clients = prompt.clients.split(",").map((e) => {
     return e.trim();
   });
   config.showCustomStrategiesInAnyAuthMenu =

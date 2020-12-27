@@ -48,9 +48,9 @@ app.get("/", (req, res) => {
 
 app.get("/login", (req, res) => {
   return res.redirect(
-    `${
-      config.url
-    }/initiate?client_id=EXAMPLE&strategy=pushover&identity=matas&redirect_uri=${
+    `${config.url}/initiate?client_id=${
+      config.demoClient ?? "EXAMPLE"
+    }&strategy=pushover&redirect_uri=${
       config.demoUrl || "http://localhost:3001"
     }/callback`
   );

@@ -5,6 +5,7 @@
   "url": "https://domain.com",
   "sessionSecure": true,
   "demoUrl": null,
+  "demoClient": null,
   "clients": ["EXAMPLE"],
   "managed": [],
   "showCustomStrategiesInAnyAuthMenu": true

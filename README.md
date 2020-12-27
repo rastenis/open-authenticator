@@ -1,8 +1,10 @@
 # open-authenticator
 
+![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/scharkee/open-authenticator)
+
 A stateless, minimal, dockerized authentication service for easy auth management. Supports custom strategies and a wide variety of PassportJS strategies.
 
-![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/scharkee/open-authenticator)
+[Demo.](https://openauthenticator.demos.matasr.com)
 
 ## Features
 
@@ -77,6 +79,8 @@ services:
 
 ```
 
+For an example of including open-authenticator as part of different compositions, take a look at [my React Hooks boilerplate project](https://github.com/Scharkee/react-hooks-uikit-express-oauth-boiler-v2).
+
 If you would rather use an included HTTPS cert solution, run it in composition mode:
 
 ## Set up for composition mode, or for building the container locally
@@ -147,7 +151,7 @@ Example response:
 ["google", "twitter", "github"]
 ```
 
-This is very handy for making dynamic log-ins, for example (new strategies will appear automatically once configured).
+This is very handy for making dynamic log-ins, for example (new strategies will appear automatically once configured). Check out [my React Hooks boilerplate](https://github.com/Scharkee/react-hooks-uikit-express-oauth-boiler-v2) for an example.
 
 ### Mismatched URI warning for testing
 
@@ -159,7 +163,7 @@ Multiple identities being linked and unlinked via open-authenticator are not sup
 
 ### Contribution & Support
 
-Submit bugs and requests through the project's issue tracker:
+Submit bugs and requests through the project's issue tracker. You are also very welcome to contribute :)
 
 [![Issues](http://img.shields.io/github/issues/Scharkee/netcore-postgres-oauth-boiler.svg)](https://github.com/Scharkee/netcore-postgres-oauth-boiler/issues)
 
