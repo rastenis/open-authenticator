@@ -13,13 +13,13 @@ const page = ` <!DOCTYPE html>
   <h2>Log in to see secret content!</h2>
   <ul>
     <li>
-        <a type="button" href="/login">Login with Pushover</a></button>
-    </li>
-    <li>
         <a type="button" href="/loginGoogle">Login with Google</a></button>
     </li>
     <li>
-        <a type="button" href="/loginAny">Login witth any method</a></button>
+        <a type="button" href="/login">Login with Pushover</a></button>
+    </li>
+    <li>
+        <a type="button" href="/loginAny">Login with any method</a></button>
     </li>
   </ul>
   <a href="https://github.com/Scharkee/open-authenticator/blob/master/demo.js">Click here to view the source of this demo!</p>
@@ -58,13 +58,17 @@ app.get("/login", (req, res) => {
 
 app.get("/loginAny", (req, res) => {
   return res.redirect(
-    `${config.url}/initiate?client_id=EXAMPLE&redirect_uri=${config.demoUrl}/callback`
+    `${config.url}/initiate?client_id=${
+      config.demoClient ?? "EXAMPLE"
+    }&redirect_uri=${config.demoUrl}/callback`
   );
 });
 
 app.get("/loginGoogle", (req, res) => {
   return res.redirect(
-    `${config.url}/initiate?client_id=EXAMPLE&strategy=google&redirect_uri=${config.demoUrl}/callback`
+    `${config.url}/initiate?client_id=${
+      config.demoClient ?? "EXAMPLE"
+    }&strategy=google&redirect_uri=${config.demoUrl}/callback`
   );
 });
 
