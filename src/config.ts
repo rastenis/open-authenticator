@@ -1,4 +1,4 @@
-import chalk = require("chalk");
+import * as chalk from "chalk";
 
 export let config = {} as any;
 

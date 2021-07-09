@@ -3,7 +3,7 @@ import { Finished } from "../finished/Finished";
 import { config } from "../config";
 import * as strategies from "../strategies";
 import to from "await-to-js";
-import * as crs from "crypto-random-string";
+import crs from "crypto-random-string";
 import { Request, Response } from "express";
 import * as passport from "passport";
 import { passportAliases } from "../constants/passportAliases";

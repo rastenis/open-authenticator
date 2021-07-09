@@ -1,10 +1,6 @@
-import {
-  IFinishedMap,
-  entityError,
-  authenticationModuleError,
-} from "../interfaces";
+import { IFinishedMap } from "../interfaces";
 import { IFinishedItem } from "./FinishedItem";
-import moment = require("moment");
+import * as moment from "moment";
 
 export class Finished {
   constructor() {}

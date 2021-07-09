@@ -8,7 +8,7 @@ import { router } from "./routes";
 import { Frame } from "./frame/Frame";
 import * as passport from "passport";
 import manualConfiguration from "./configs/manual";
-import chalk = require("chalk");
+import * as chalk from "chalk";
 
 // Importing managed config
 let managedConfiguration;

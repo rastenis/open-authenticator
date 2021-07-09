@@ -3,7 +3,7 @@ import { frame } from "./index";
 import * as strategies from "./strategies";
 import { config } from "./config";
 import to from "await-to-js";
-import * as crs from "crypto-random-string";
+import crs from "crypto-random-string";
 
 export let router = Router();
 

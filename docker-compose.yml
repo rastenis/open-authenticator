@@ -14,7 +14,7 @@ services:
     build:
       context: ./nginx-certbot
       args:
-        DOMAIN: 234234
+        DOMAIN: domain.com
     environment:
       CERTBOT_EMAIL: someemail@mail.com
     ports:
