@@ -4,7 +4,7 @@
   "description": "Open Authenticator platform.",
   "exports": "./dist/index.js",
   "engines": {
-    "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
+    "node": "^12.20.0 || ^14.13.1 || ^15.10.0 || >=16.0.0"
   },
   "repository": "git@github.com:Scharkee/open-authenticator.git",
   "author": "Matas Rastenis <matas2k@gmail.com>",

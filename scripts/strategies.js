@@ -1,12 +1,11 @@
 "use strict";
-const inquirer = require("inquirer");
 const endpoint = "https://api.mtr.lt/openauthenticator/";
-const axios = require("axios");
-const fs = require("fs-extra");
-const ora = require("ora");
-const chalk = require("chalk");
-
-const to = require("await-to-js").default;
+import axios from "axios";
+import fs from "fs-extra";
+import ora from "ora";
+import inquirer from "inquirer";
+import { to } from "await-to-js";
+import chalk from "chalk";
 
 (async () => {
   let [configError, config] = await to(fs.readJson("./config/config.json"));

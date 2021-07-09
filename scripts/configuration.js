@@ -1,9 +1,9 @@
 "use strict";
-const fs = require("fs-extra");
-const inquirer = require("inquirer");
-const to = require("await-to-js").default;
-const chalk = require("chalk");
-const exec = require("child_process").exec;
+import fs from "fs-extra";
+import inquirer from "inquirer";
+import chalk from "chalk";
+import { exec } from "child_process";
+import { to } from "await-to-js";
 
 (async () => {
   let [configError, config] = await to(fs.readJson("./config/config.json"));
